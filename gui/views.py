@@ -2,12 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
-from magine.html_templates.html_tools import process_filter_table
-from .models import Data
-import pandas as pd
-from magine.data.formatter import pivot_raw_gene_data
 from gui.data_functions import get_significant_numbers
+import pandas as pd
 from .forms import ProjectForm
+from .models import Data
+
+# from magine.data.formatter import pivot_raw_gene_data
+# from magine.html_templates.html_tools import process_filter_table
+
 
 
 def index(reqest):
@@ -53,12 +55,12 @@ def post_table(request):
                                         request))
 
 
-def display_data(request):
-    ex = Data.objects.get(project_name='cisplatin_test')
-    df = pd.read_csv(ex.file_name_path, low_memory=False)
-    df = pivot_raw_gene_data(df)
-    table_info = process_filter_table(df, title=ex.project_name)
-    return render(request, 'filter_table.html', table_info)
+# def display_data(request):
+#     ex = Data.objects.get(project_name='cisplatin_test')
+#     df = pd.read_csv(ex.file_name_path, low_memory=False)
+#     df = pivot_raw_gene_data(df)
+#     table_info = process_filter_table(df, title=ex.project_name)
+#     return render(request, 'filter_table.html', table_info)
 
 """
 def upload_csv(request):
