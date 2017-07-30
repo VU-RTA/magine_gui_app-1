@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+    <table id="table" class="table table-striped">
+        <thead>
+        <tr>
+            <td><b>Experimental method</b></td>
+            {% for cell in time %}
+                <td><b>{{ cell }}</b></td>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for item , new_list in dict_list.items() %}
+            <tr>
+
+
+                <th>{{ item }}</th>
+                {% for key, value in new_list.items() %}
+                    <td> {{ value }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('table').DataTable({
+                searchDelay: 250
+            });
+        });
+    </script>
+{% endblock %}

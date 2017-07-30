@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="post">
+        <li>{{ data.project_name }}</li>
+        <table id="table" class="table table-striped">
+            <thead>
+            <tr>
+                <td><b>Experimental method</b></td>
+                {% for cell in data.get_times() %}
+                    <td><b>{{ cell }}</b></td>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for item , new_list in data.get_stats().items() %}
+                <tr>
+                    <th>{{ item }}</th>
+                    {% for key, value in new_list.items() %}
+                        <td> {{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+        <script>
+            $(document).ready(function () {
+                $('table').DataTable({
+                    searchDelay: 250
+                });
+            });
+        </script>
+    </div>
+{% endblock %}

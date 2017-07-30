@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %} Welcome to MAGINE{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="page-header">
+            <h1>MAGINE</h1>
+        </div>
+        <div class="container-fluid">
+            <div class="row content">
+                <div class="col-sm-3 sidenav">
+                    <h4>Projects</h4>
+                    <a href="{{ url('add_new_project') }}"
+                       class="top-menu"><span
+                            class="glyphicon glyphicon-plus"></span> Add
+                                                                     Project</a>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><span class="label label-default">Click below to view table of data</span>
+                        </li>
+
+                        {% for project in projects %}
+                            <li class="active"><a
+                                    href="post/{{ project.project_name }}"
+                                    target="_blank">{{ project.project_name }}</a>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

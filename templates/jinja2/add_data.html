@@ -1,0 +1,13 @@
+{% extends "project_details.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+    <h1>Add data</h1>
+    <form enctype="multipart/form-data" method="POST" class="post-form">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {{ form.as_p()|safe }}
+        <div class="btn-seperator">
+            <button type="submit" class="action green btn-center" name="action" value="add_csv"><span class="label">Upload</span>
+            </button>
+        </div>
+    </form>
+{% endblock %}
