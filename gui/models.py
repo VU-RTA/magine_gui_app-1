@@ -1,11 +1,9 @@
 from django.db import models
 from django.utils import timezone
-from magine.data.datatypes import ExperimentalData
 from gui.data_functions import get_significant_numbers
 import pandas as pd
 import json
-import os
-# Create your models here.
+
 
 
 class Data(models.Model):
@@ -33,3 +31,25 @@ class Data(models.Model):
 
     def _str__(self):
         return self.project_name
+
+
+class Measurement(models.Model):
+    DATA_TYPE = (
+        'metabolite',
+        'protein',
+        'rna'
+    )
+
+    name = models.CharField(max_length=200)
+    p_value = models.FloatField()  # 'p_value_group_1_and_group_2'
+    fold_change = models.FloatField()  # 'treated_control_fold_change'
+    significant_flag = models.BooleanField()  # 'significant_flag'
+    exp_method = models.CharField(max_length=200)  # 'data_type'
+    species_type = models.CharField(max_length=200)  # 'species_type'
+    sample_id = models.CharField(max_length=200)  # 'time'
+    data_type = models.CharField(max_length=100, choices=DATA_TYPE)
+
+
+class Dataset(models.Model):
+    project_name = models.CharField(max_length=200)
+    measurements = models.ForeignKey(Measurement, on_delete=models.CASCADE)
