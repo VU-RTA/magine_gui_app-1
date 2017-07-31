@@ -25,7 +25,7 @@ SECRET_KEY = '4am#0a-x##pt+_*%%8tp+f&hqf@a7on=%0o$zuq1(wo=-i-@(^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['magine.lolab.xyz']
 
 
 # Application definition
@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'magine_gui_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '_state/db.sqlite3'),
     }
 }
 
