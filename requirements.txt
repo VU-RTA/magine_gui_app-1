@@ -1,4 +1,4 @@
-django]
+django
 django-import-export
 jinja2
 numpy
