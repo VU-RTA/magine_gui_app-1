@@ -2,13 +2,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
+from django.http import JsonResponse
 from gui.data_functions import get_significant_numbers
 import pandas as pd
-from .forms import ProjectForm
+from .forms import ProjectForm, ListOfSpeciesFrom
 from .models import Data
+from gui.network_functions import small_graph, create_subgraph
+import json
 
 # from magine.data.formatter import pivot_raw_gene_data
 # from magine.html_templates.html_tools import process_filter_table
+
 
 
 
@@ -26,20 +30,6 @@ def post_detail(request, pk):
     return render(request, 'project_details.html', {'data':ex})
 
 
-def add_new_project(request):
-    if request.method == "POST":
-        form = ProjectForm(request.POST, request.FILES)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.set_exp_data(form.cleaned_data['file'])
-            post.author = request.user
-            post.published_date = timezone.now()
-            post.save()
-            return redirect('post_detail', pk=post.project_name)
-    else:
-        form = ProjectForm()
-    return render(request, 'add_data.html', {'form': form})
-
 
 def post_table(request):
     ex = Data.objects.get(project_name='cisplatin_test')
@@ -54,6 +44,46 @@ def post_table(request):
                                          'title': ex.project_name},
                                         request))
 
+
+# FORMS
+def add_new_project(request):
+    if request.method == "POST":
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.set_exp_data(form.cleaned_data['file'])
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            return redirect('post_detail', pk=post.project_name)
+    else:
+        form = ProjectForm()
+        return render(request, 'add_data.html', {'form': form})
+
+
+def generate_subgraph_from_list(request):
+    if request.method == "POST":
+        form = ListOfSpeciesFrom(request.POST)
+        if form.is_valid():
+            post = form.cleaned_data['list_of_species'].split(',')
+
+            # post = form.save(commit=False)
+            # print(post.list_of_species)
+            x = small_graph()
+            # graph = create_subgraph(post)
+            response = {
+                'nodes':json.dumps(x['elements']['nodes']),
+                'edges':json.dumps(x['elements']['edges']),
+                        }
+            # return JsonResponse(response)
+            template = get_template('subgraph_view.html', using='jinja2')
+            return HttpResponse(template.render(response))
+            # return render(request, 'subgraph_view.html', {'data': x})
+            # return render(request, 'list_of_species.html',
+            #               {'list_species': post})
+    else:
+        form = ListOfSpeciesFrom()
+    return render(request, 'form_species_list.html', {'form': form})
 
 # def display_data(request):
 #     ex = Data.objects.get(project_name='cisplatin_test')

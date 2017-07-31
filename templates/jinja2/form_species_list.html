@@ -1,0 +1,10 @@
+{% extends "project_details.html" %}
+{% block title %}Generate Subgraph{% endblock %}
+{% block content %}
+    <h1>Subgraph from list of genes</h1>
+    <form  method="post">
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}

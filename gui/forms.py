@@ -8,3 +8,9 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Data
         fields = ('project_name',)
+
+
+class ListOfSpeciesFrom(forms.Form):
+    list_of_species = forms.CharField()
+    class Meta:
+        fields = ('species_list',)

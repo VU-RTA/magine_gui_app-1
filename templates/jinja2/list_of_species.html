@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>List of uploaded species</h1>
+    {%  for item in list_species %}
+    <li> <a> {{ item }} </a></li>
+    {%  endfor %}
+
+{% endblock %}
