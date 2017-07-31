@@ -40,16 +40,19 @@ class Measurement(models.Model):
         'rna'
     )
 
-    name = models.CharField(max_length=200)
-    p_value = models.FloatField()  # 'p_value_group_1_and_group_2'
-    fold_change = models.FloatField()  # 'treated_control_fold_change'
+    gene = models.CharField(max_length=200, blank=True)
+    protein = models.CharField(max_length=200, blank=True)
+    compound = models.CharField(max_length=200, blank=True)
+    compound_id = models.CharField(max_length=200, blank=True)
+    p_value_group_1_and_group_2 = models.FloatField()  # 'p_value_group_1_and_group_2'
+    treated_control_fold_change = models.FloatField()  # 'treated_control_fold_change'
     significant_flag = models.BooleanField()  # 'significant_flag'
     exp_method = models.CharField(max_length=200)  # 'data_type'
     species_type = models.CharField(max_length=200)  # 'species_type'
     sample_id = models.CharField(max_length=200)  # 'time'
-    data_type = models.CharField(max_length=100, choices=DATA_TYPE)
+    data_type = models.CharField(max_length=100)
 
 
 class Dataset(models.Model):
     project_name = models.CharField(max_length=200)
-    measurements = models.ForeignKey(Measurement, on_delete=models.CASCADE)
+    measurements = models.ManyToManyField(Measurement)
