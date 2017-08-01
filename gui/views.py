@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.loader import get_template
-from django.http import JsonResponse
 from gui.data_functions import get_significant_numbers
 import pandas as pd
 from .forms import ProjectForm, ListOfSpeciesFrom
@@ -69,11 +68,11 @@ def generate_subgraph_from_list(request):
 
             # post = form.save(commit=False)
             # print(post.list_of_species)
-            x = small_graph()
-            # graph = create_subgraph(post)
+            graph = small_graph()
+            graph = create_subgraph(post)
             response = {
-                'nodes':json.dumps(x['elements']['nodes']),
-                'edges':json.dumps(x['elements']['edges']),
+                'nodes':json.dumps(graph['elements']['nodes']),
+                'edges':json.dumps(graph['elements']['edges']),
                         }
             # return JsonResponse(response)
             template = get_template('subgraph_view.html', using='jinja2')

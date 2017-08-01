@@ -2,35 +2,117 @@
 <html>
 
 <head>
-    <title>Tutorial 1: Getting Started</title>
-    <script src="{{static('js/cytoscape.js')}}"></script>
+    <meta charset=utf-8 />
+    <title>Subgraphs</title>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
+    <script src="{{ static('js/cytoscape.js') }}"></script>
+    <script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
+    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script>
 
 </head>
 
+
 <style>
+    body {
+        font: 14px helvetica neue, helvetica, arial, sans-serif;
+    }
+
     #cy {
         width: 100%;
         height: 100%;
         position: absolute;
-        top: 0px;
-        left: 0px;
+        top: 0;
+        left: 0;
+    }
+
+    #layoutButtons {
+        position: absolute;
+        top: 5%;
+        right: 2%;
+    }
+
+    input[type='button'] {
+        width: 100%;
     }
 </style>
 
 <body>
 <div id="cy"></div>
+<div id='layoutButtons'>
+    <input type='button' id='HieButton' value='Hierarchical layout'>
+    <br>
+    <input type='button' id='DagreButton' value='Default layout'>
+
+</div>
 <script>
+
     var cy = cytoscape({
         container: document.getElementById('cy'),
+
         {% autoescape off %}
         elements: {
             nodes:{{nodes}},
             edges:{{edges}}
-        }
+        },
         {% endautoescape %}
+        style: [
+            {
+                selector: 'node',
+                css: {
+                    'content': 'data(id)',
+                    'text-valign': 'center',
+                    'text-halign': 'center'
+                }
+            },
+            {
+                selector: '$node > node',
+                css: {
+                    'padding-top': '10px',
+                    'padding-left': '10px',
+                    'padding-bottom': '10px',
+                    'padding-right': '10px',
+                    'text-valign': 'top',
+                    'text-halign': 'center',
+                    'background-color': '#bbb'
+                }
+            },
+            {
+                selector: 'edge',
+                css: {
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle'
+                }
+            },
+            {
+                selector: ':selected',
+                css: {
+                    'background-color': 'yellow',
+                    'line-color': 'black',
 
+                    'target-arrow-color': 'black',
+                    'source-arrow-color': 'black'
+                }
+            }
+        ]
     });
 
+    cy.layout({
+        name: 'dagre',
+        avoidOverlap: true
+    }
+    ).run();
+
+
+    var HieButton = document.getElementById('HieButton');
+    HieButton.addEventListener('click', function () {
+        cy.layout({name: 'breadthfirst', avoidOverlap: true}).run();
+
+    });
+    var DagreButton = document.getElementById('DagreButton');
+    DagreButton.addEventListener('click', function () {
+        cy.layout({name: 'dagre', avoidOverlap: true}).run();
+
+    });
 
 </script>
 </body>
