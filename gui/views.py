@@ -65,21 +65,20 @@ def generate_subgraph_from_list(request):
         form = ListOfSpeciesFrom(request.POST)
         if form.is_valid():
             post = form.cleaned_data['list_of_species'].split(',')
+            names = []
+            for i in post:
+                i = i.upper()
+                i = i.replace(' ', '')
+                names.append(i)
 
-            # post = form.save(commit=False)
-            # print(post.list_of_species)
-            graph = small_graph()
-            graph = create_subgraph(post)
+            graph = create_subgraph(names)
             response = {
-                'nodes':json.dumps(graph['elements']['nodes']),
-                'edges':json.dumps(graph['elements']['edges']),
+                'nodes': json.dumps(graph['elements']['nodes']),
+                'edges': json.dumps(graph['elements']['edges']),
                         }
-            # return JsonResponse(response)
+
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(response))
-            # return render(request, 'subgraph_view.html', {'data': x})
-            # return render(request, 'list_of_species.html',
-            #               {'list_species': post})
     else:
         form = ListOfSpeciesFrom()
     return render(request, 'form_species_list.html', {'form': form})
