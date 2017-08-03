@@ -5,10 +5,12 @@ from magine.networks.network_subgraphs import NetworkSubgraphs
 
 
 _dir = os.path.dirname(__file__)
-_g_path = os.path.join(_dir, 'networks',
-                       'prac_challenge_2017_partial_data_painted.gml')
+# _g_path = os.path.join(_dir, 'networks',
+#                        'prac_challenge_2017_partial_data_painted.gml')
+_g_path = os.path.join(_dir, 'networks','background_network.p')
 
-g = nx.read_gml(_g_path)
+# g = nx.read_gml(_g_path)
+g = nx.read_gpickle(_g_path)
 subgraph_gen = NetworkSubgraphs(g)
 
 
