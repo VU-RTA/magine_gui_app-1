@@ -1,12 +1,12 @@
 FROM python:3.6
 ENV PYTHONUNBUFFERED 1
 
-ENV MAGINE_HOME=/magine
+ENV MAGINE_HOME=/magine_home
 
 RUN mkdir $MAGINE_HOME
 WORKDIR $MAGINE_HOME
 ADD requirements.txt requirements-production.txt Magine/requirements.txt $MAGINE_HOME/
 ADD . $MAGINE_HOME
 RUN pip install -r requirements-production.txt
-ENV PYTHONPATH /Magine:$PYTHONPATH
+ENV PYTHONPATH /magine_home:$PYTHONPATH
 CMD ["uwsgi"]
