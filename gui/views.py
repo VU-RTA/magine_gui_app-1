@@ -61,8 +61,8 @@ def add_new_project(request):
 
 
 def generate_subgraph_from_list(request):
-    if request.method == "POST":
-        form = ListOfSpeciesFrom(request.POST)
+    if request.method == "GET":
+        form = ListOfSpeciesFrom(request.GET)
         if form.is_valid():
             post = form.cleaned_data['list_of_species'].split(',')
             names = []
