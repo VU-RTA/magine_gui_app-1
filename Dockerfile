@@ -8,5 +8,5 @@ WORKDIR $MAGINE_HOME
 ADD requirements.txt requirements-production.txt Magine/requirements.txt $MAGINE_HOME/
 ADD . $MAGINE_HOME
 RUN pip install -r requirements-production.txt
-ENV PYTHONPATH /magine_home:$PYTHONPATH
+ENV PYTHONPATH /magine_home/Magine:$PYTHONPATH
 CMD ["uwsgi"]
