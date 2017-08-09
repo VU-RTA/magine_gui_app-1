@@ -1,0 +1,36 @@
+{% extends "project_details.html" %}
+
+{% block title %}Generate Subgraph{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-6">
+            <h1>Path between two species generator</h1>
+            <p> Please provide two species. They can be any species in the network. The function finds connections
+                between each species provided, including any species that complete a path between.
+                If you select bidirectional, it will find the shortest path back to the start node from the end node as
+                well.
+            </p>
+
+
+            <form method="GET" class="form-inline">
+                <div class="fieldWrapper form-group">
+                    <label for="{{ form.start.id_for_label }}">Start:</label>
+                    {{ form.start }}
+                </div>
+
+                <div class="fieldWrapper form-group">
+                    <label for="{{ form.end.id_for_label }}">End:</label>
+                    {{ form.end }}
+                </div>
+
+                <div class="fieldWrapper form-group ">
+                    <label for="{{ form.bi_dir.id_for_label }}"> Bidirectional </label>
+                    {{ form.bi_dir }}
+                </div>
+                <input type="submit" value="Submit"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}

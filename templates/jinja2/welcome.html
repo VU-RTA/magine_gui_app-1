@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %} Welcome to MAGINE{% endblock %}
 {% block content %}
+
     <div class="container">
         <div class="page-header">
             <h1>MAGINE</h1>
@@ -11,13 +12,13 @@
 
 
                     <h4><a href="{{ url('subgraph') }} " target="_blank"
-                       class="top-menu"> Create subnetworks</a></h4>
+                           class="top-menu"> Create subnetworks</a></h4>
                     <br>
                     <h4>Projects</h4>
                     <a href="{{ url('add_new_project') }}"
                        class="top-menu"><span
                             class="glyphicon glyphicon-plus"></span> Add
-                                                                     Project</a>
+                        Project</a>
                     <ul class="nav nav-pills nav-stacked">
                         <li><span class="label label-default">Click below to view table of data</span>
                         </li>

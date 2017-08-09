@@ -1,18 +1,13 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.utils import timezone
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.template.loader import get_template
 from gui.data_functions import get_significant_numbers
 import pandas as pd
-from .forms import ProjectForm, ListOfSpeciesFrom
+from .forms import ProjectForm, ListOfSpeciesFrom, PathBetweenForm
 from .models import Data
-from gui.network_functions import small_graph, create_subgraph
+from gui.network_functions import path_between, create_subgraph
 import json
-
-# from magine.data.formatter import pivot_raw_gene_data
-# from magine.html_templates.html_tools import process_filter_table
-
-
 
 
 def index(reqest):
@@ -26,8 +21,7 @@ def index(reqest):
 def post_detail(request, pk):
     print(pk)
     ex = Data.objects.get(project_name=pk)
-    return render(request, 'project_details.html', {'data':ex})
-
+    return render(request, 'project_details.html', {'data': ex})
 
 
 def post_table(request):
@@ -38,10 +32,12 @@ def post_table(request):
 
     # return template.render(table_info, request)
     template = get_template('table_stats.html', using='jinja2')
-    return HttpResponse(template.render({'dict_list': stats,
-                                         'time': times,
-                                         'title': ex.project_name},
-                                        request))
+    return HttpResponse(template.render({
+        'dict_list': stats,
+        'time': times,
+        'title': ex.project_name
+    },
+        request))
 
 
 # FORMS
@@ -75,13 +71,40 @@ def generate_subgraph_from_list(request):
             response = {
                 'nodes': json.dumps(graph['elements']['nodes']),
                 'edges': json.dumps(graph['elements']['edges']),
-                        }
+            }
 
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(response))
     else:
         form = ListOfSpeciesFrom()
     return render(request, 'form_species_list.html', {'form': form})
+
+
+def generate_path_between_two(request):
+    if request.method == "GET":
+        form = PathBetweenForm(request.GET)
+        print(form)
+        print(form.is_valid())
+        # print(form.cleaned_data['start'])
+        if form.is_valid():
+            start = form.cleaned_data['start']
+            end = form.cleaned_data['end']
+            start = start.upper()
+            end = end.upper()
+            bi_dir = form.cleaned_data['bi_dir']
+            print(bi_dir)
+            graph = path_between(start, end, bi_dir)
+            data = {
+                'nodes': json.dumps(graph['elements']['nodes']),
+                'edges': json.dumps(graph['elements']['edges']),
+            }
+
+            template = get_template('subgraph_view.html', using='jinja2')
+            return HttpResponse(template.render(data))
+    else:
+        form = PathBetweenForm()
+    return render(request, 'form_species_to_species.html', {'form': form})
+
 
 # def display_data(request):
 #     ex = Data.objects.get(project_name='cisplatin_test')

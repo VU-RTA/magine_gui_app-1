@@ -1,23 +1,25 @@
 {% extends "project_details.html" %}
 {% block title %}Generate Subgraph{% endblock %}
 {% block content %}
-    <h1>Subnetwork generator</h1>
-    <p>Please provide a list of comma separates genes/metabolites in HGNC/HMDB format.
-        They can be any species in the network. The function finds connections between each species provided,
-        including any species that complete a path between.
-    </p>
-    <form class="form-group"  method="GET">
-        <tr>
-            <th>
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-6">
+            <h1>Subnetwork generator</h1>
+            <p>Please provide a list of comma separates genes/metabolites in
+                HGNC/HMDB format. They can be any species in the network. The function finds
+                connections between each species provided,including any species that complete a path between.
+            </p>
+            <form class="form-group" method="GET">
                 <label for="id_list_of_species">List of species:</label>
-            </th>
-            <td>
                 <ul class="errorlist">
                     <li>This field is required.</li>
                 </ul>
-                <textarea class="form-control" rows="5"  name="list_of_species" required id="id_list_of_species"></textarea>
-            </td>
-        </tr>
-    <input type="submit" value="Submit" />
-</form>
+                <textarea class="form-control" rows="5" name="list_of_species"
+                          required id="id_list_of_species">
+                </textarea>
+                <input type="submit" value="Submit"/>
+            </form>
+
+        </div>
+    </div>
 {% endblock %}
