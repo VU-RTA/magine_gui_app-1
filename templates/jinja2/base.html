@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
     {% block head %}
-        <title>{% block title %}{% endblock %} - My Webpage</title>
+        <title>{% block title %}{% endblock %} - MAGINE </title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <meta charset="UTF-8">
-        <link href="https://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
-        <link href="https://cdn.datatables.net/r/bs-3.3.5/dt-1.10.9/datatables.min.css" rel="stylesheet"
+        <link href="https://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css"
+              rel="stylesheet"/>
+        <link href="https://cdn.datatables.net/r/bs-3.3.5/dt-1.10.9/datatables.min.css"
+              rel="stylesheet"
               type="text/css"/>
-        <link href="https://yadcf-showcase.appspot.com/resources/css/jquery.dataTables.yadcf.css" rel="stylesheet"
+        <link href="https://yadcf-showcase.appspot.com/resources/css/jquery.dataTables.yadcf.css"
+              rel="stylesheet"
               type="text/css"/>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.min.css" rel="stylesheet"
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.min.css"
+              rel="stylesheet"
               type="text/css"/>
 
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -21,19 +26,20 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.jquery.min.js"></script>
         <script src="https://yadcf-showcase.appspot.com/resources/js/jquery.dataTables.yadcf.js"></script>
         <style>
-            /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
-            .row.content {
-                height: 1500px
+            /* Remove the navbar's default margin-bottom and rounded borders */
+            .navbar {
+                margin-bottom: 0;
+                border-radius: 0;
             }
 
-            table {
-                table-layout: fixed;
-                width: 100px;
-                border: 1px solid red;
+            /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+            .row.content {
+                height: 450px
             }
 
             /* Set gray background color and 100% height */
             .sidenav {
+                padding-top: 20px;
                 background-color: #f1f1f1;
                 height: 100%;
             }
@@ -61,6 +67,26 @@
     {% endblock %}
 </head>
 <body>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url('index') }}">MAGINE</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url('subgraph') }}">Subgraph from list</a></li>
+            <li><a href="{{ url('path') }}">Single path from two species</a></li>
+        </ul>
+    </div>
+</nav>
 <div id="content">{% block content %}{% endblock %}</div>
 </body>
+
+<script>
+
+    $(".nav li").on("click", function () {
+        $(".nav li").removeClass("active");
+        $(this).addClass("active");
+    });
+
+</script>
 </html>

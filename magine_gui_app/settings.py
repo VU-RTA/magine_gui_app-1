@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['magine.lolab.xyz', '127.0.0.1']
 
 INSTALLED_APPS = [
     'gui',
-    'import_export',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
