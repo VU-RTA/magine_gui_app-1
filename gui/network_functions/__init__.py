@@ -32,9 +32,9 @@ def neighbors(node, up, down):
 
     species = [node]
     if up:
-        species += g.successors(node)
-    if down:
         species += g.predecessors(node)
+    if down:
+        species += g.successors(node)
 
     sg = nx.subgraph(g, species)
     for i in sg.nodes():

@@ -5,9 +5,7 @@
         <title>{% block title %}{% endblock %} - MAGINE </title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet"
-              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-        <meta charset="UTF-8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link href="https://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css"
               rel="stylesheet"/>
         <link href="https://cdn.datatables.net/r/bs-3.3.5/dt-1.10.9/datatables.min.css"
@@ -20,7 +18,8 @@
               rel="stylesheet"
               type="text/css"/>
 
-        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://code.jquery.com/ui/1.9.0/jquery-ui.min.js"></script>
         <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.jquery.min.js"></script>
@@ -72,22 +71,18 @@
         <div class="navbar-header">
             <a class="navbar-brand" href="{{ url('index') }}">MAGINE</a>
         </div>
-        <ul class="nav navbar-nav">
-            <li><a href="{{ url('subgraph') }}">Subgraph from list</a></li>
-            <li><a href="{{ url('path') }}">Single path from two species</a></li>
-            <li><a href="{{ url('neighbors') }}">Neighbors of a node</a></li>
+            <ul class="nav navbar-nav">
+            <li class="dropdown-toggle"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Network Queries <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url('subgraph') }}">Subgraph from list</a></li>
+                    <li><a href="{{ url('path') }}">Single path between two nodes</a></li>
+                    <li><a href="{{ url('neighbors') }}">Neighbors of a node</a></li>
+                </ul>
+            </li>
         </ul>
     </div>
 </nav>
 <div id="content">{% block content %}{% endblock %}</div>
 </body>
 
-<script>
-
-    $(".nav li").on("click", function () {
-        $(".nav li").removeClass("active");
-        $(this).addClass("active");
-    });
-
-</script>
 </html>
