@@ -2,10 +2,10 @@ import networkx as nx
 from gui.network_functions.networkx_tools import from_networkx
 import os
 from magine.networks.network_subgraphs import NetworkSubgraphs
-from magine.networks.network_generator import create_background_network
 
 
 def run():
+    from magine.networks.network_generator import create_background_network
     create_background_network('networks/background_network')
 
 
