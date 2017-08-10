@@ -18,6 +18,15 @@ class ListOfSpeciesFrom(forms.Form):
         fields = ('species_list',)
 
 
+class NodeNeighborsForm(forms.Form):
+    node = forms.CharField()
+    up_stream = forms.BooleanField(widget=widg.CheckboxInput(), required=False)
+    down_stream = forms.BooleanField(widget=widg.CheckboxInput(), required=False)
+
+    class Meta:
+        fields = ('node', 'up_stream', 'down_stream')
+
+
 class PathBetweenForm(forms.Form):
     start = forms.CharField()
     end = forms.CharField()

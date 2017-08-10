@@ -8,5 +8,6 @@ urlpatterns = [
     url(r'^$', views.post_table, name='post_table'),
     url(r'^subgraph$', views.generate_subgraph_from_list, name='subgraph'),
     url(r'^path$', views.generate_path_between_two, name='path'),
+    url(r'^neighbors$', views.generate_neighbors, name='neighbors'),
     # url(r'^data/$', views.display_data, name='data'),
 ]

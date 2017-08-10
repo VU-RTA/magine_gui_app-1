@@ -1,0 +1,34 @@
+{% extends "project_details.html" %}
+
+{% block title %}Neighbors of node{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-6">
+            <h1>Node neighbors</h1>
+            <p> Please provide a name of a biological species. They can be any species in the network.
+                The function then finds upstream, downstream, or both neighbors.
+            </p>
+
+
+            <form method="GET" class="form-inline">
+                <div class="fieldWrapper form-group">
+                    <label for="{{ form.node.id_for_label }}">Start:</label>
+                    {{ form.node }}
+                </div>
+
+                <div class="fieldWrapper form-group">
+                    <label for="{{ form.up_stream.id_for_label }}">End:</label>
+                    {{ form.up_stream }}
+                </div>
+
+                <div class="fieldWrapper form-group ">
+                    <label for="{{ form.down_stream.id_for_label }}"> Bidirectional </label>
+                    {{ form.down_stream }}
+                </div>
+                <input type="submit" value="Submit"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}

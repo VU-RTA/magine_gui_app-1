@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from gui.data_functions import get_significant_numbers
 import pandas as pd
-from .forms import ProjectForm, ListOfSpeciesFrom, PathBetweenForm
+from .forms import ProjectForm, ListOfSpeciesFrom, PathBetweenForm, NodeNeighborsForm
 from .models import Data
-from gui.network_functions import path_between, create_subgraph
+from gui.network_functions import path_between, create_subgraph, neighbors
 import json
 
 
@@ -19,7 +19,6 @@ def index(reqest):
 
 
 def post_detail(request, pk):
-    print(pk)
     ex = Data.objects.get(project_name=pk)
     return render(request, 'project_details.html', {'data': ex})
 
@@ -83,16 +82,12 @@ def generate_subgraph_from_list(request):
 def generate_path_between_two(request):
     if request.method == "GET":
         form = PathBetweenForm(request.GET)
-        print(form)
-        print(form.is_valid())
-        # print(form.cleaned_data['start'])
         if form.is_valid():
             start = form.cleaned_data['start']
             end = form.cleaned_data['end']
             start = start.upper()
             end = end.upper()
             bi_dir = form.cleaned_data['bi_dir']
-            print(bi_dir)
             graph = path_between(start, end, bi_dir)
             data = {
                 'nodes': json.dumps(graph['elements']['nodes']),
@@ -106,53 +101,24 @@ def generate_path_between_two(request):
     return render(request, 'form_species_to_species.html', {'form': form})
 
 
-# def display_data(request):
-#     ex = Data.objects.get(project_name='cisplatin_test')
-#     df = pd.read_csv(ex.file_name_path, low_memory=False)
-#     df = pivot_raw_gene_data(df)
-#     table_info = process_filter_table(df, title=ex.project_name)
-#     return render(request, 'filter_table.html', table_info)
+def generate_neighbors(request):
+    if request.method == "GET":
+        form = NodeNeighborsForm(request.GET)
+        if form.is_valid():
+            node = form.cleaned_data['node']
+            start = node.upper()
 
-"""
-def upload_csv(request):
-    data = {}
-    if "GET" == request.method:
-        return render(request, "import.html", data)
-    # if not GET, then proceed
-    try:
-        csv_file = request.FILES["csv_file"]
-        if not csv_file.name.endswith('.csv'):
-            messages.error(request, 'File is not CSV type')
-            return HttpResponseRedirect(reverse("myapp:upload_csv"))
-        # if file is too large, return
-        if csv_file.multiple_chunks():
-            messages.error(request, "Uploaded file is too big (%.2f MB)." % (csv_file.size / (1000 * 1000),))
-            return HttpResponseRedirect(reverse("myapp:upload_csv"))
+            up_stream = form.cleaned_data['up_stream']
+            down_stream = form.cleaned_data['down_stream']
+            graph = neighbors(start, up_stream, down_stream)
+            data = {
+                'nodes': json.dumps(graph['elements']['nodes']),
+                'edges': json.dumps(graph['elements']['edges']),
+            }
 
-        file_data = csv_file.read().decode("utf-8")
+            template = get_template('subgraph_view.html', using='jinja2')
+            return HttpResponse(template.render(data))
+    else:
+        form = NodeNeighborsForm()
+    return render(request, 'form_graph_neighbors.html', {'form': form})
 
-        lines = file_data.split("\n")
-        # loop over the lines and save them in db. If error , store as string and then display
-        for line in lines:
-            fields = line.split(",")
-            data_dict = {}
-            data_dict["name"] = fields[0]
-            data_dict["start_date_time"] = fields[1]
-            data_dict["end_date_time"] = fields[2]
-            data_dict["notes"] = fields[3]
-            try:
-                form = EventsForm(data_dict)
-                if form.is_valid():
-                    form.save()
-                else:
-                    logging.getLogger("error_logger").error(form.errors.as_json())
-            except Exception as e:
-                logging.getLogger("error_logger").error(form.errors.as_json())
-                pass
-
-    except Exception as e:
-        logging.getLogger("error_logger").error("Unable to upload file. " + repr(e))
-        messages.error(request, "Unable to upload file. " + repr(e))
-
-    return HttpResponseRedirect(reverse("myapp:upload_csv"))
-"""
