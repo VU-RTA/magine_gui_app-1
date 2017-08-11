@@ -4,54 +4,26 @@
 
     <div class="container">
         <div class="page-header">
-            <h1>MAGINE</h1>
+            <h1>Projects home</h1>
         </div>
         <div class="container-fluid">
             <div class="row content">
                 <div class="col-sm-3 sidenav">
+                <ul class="list-group">
+                            <a href="{{ url('add_new_project') }}" class="top-menu"><span
+                                    class="glyphicon glyphicon-plus"></span> Add Project</a>
 
+                            {% for project in projects %}
 
-                    <h4><a href="{{ url('subgraph') }} " target="_blank"
-                           class="top-menu"> Create subnetworks</a></h4>
-                    <br>
-                    <h4>Projects</h4>
-                    <a href="{{ url('add_new_project') }}"
-                       class="top-menu"><span
-                            class="glyphicon glyphicon-plus"></span> Add
-                        Project</a>
-                    <ul class="nav nav-pills nav-stacked">
-                        <li><span class="label label-default">Click below to view table of data</span>
-                        </li>
+                            <li class="list-group-item"> <a href="post/{{ project.project_name }}"
+                                   target="_blank">{{ project.project_name }}</a> </li>
 
-                        {% for project in projects %}
-                            <li class="active"><a
-                                    href="post/{{ project.project_name }}"
-                                    target="_blank">{{ project.project_name }}</a>
-                            </li>
-                        {% endfor %}
+                            {% endfor %}
+                </ul>
 
-                    </ul>
-                    <br>
                 </div>
-            <div class="col-sm=5">
-                <h4>
-                    Background on networks
-                </h4>
-                <p>
-                    MAGINE networks are built using multiple databases.
-                     <ul >
-                      <li> KEGG (11254 nodes and 63473 edges)</li>
-                      <li> Reactome Functional Interactions (9146 nodes and 149561 edges)</li>
-                      <li> HMBD (85052 nodes and  849085 edges)</li>
-                      <li> BioGrid (9128 nodes and  11896 edges) </li>
-                      <li> Total (97976 nodes and  1045902 edges) </li>
-                    </ul>
-                </p>
-
-            </div>
-            </div>
+                </div>
 
         </div>
-
     </div>
 {% endblock %}

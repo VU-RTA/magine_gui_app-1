@@ -19,18 +19,18 @@ class ListOfSpeciesFrom(forms.Form):
 
 
 class NodeNeighborsForm(forms.Form):
-    node = forms.CharField()
-    up_stream = forms.BooleanField(widget=widg.CheckboxInput(), required=False)
-    down_stream = forms.BooleanField(widget=widg.CheckboxInput(), required=False)
+    node = forms.CharField(widget=widg.TextInput({'class':'form-group'}))
+    up_stream = forms.BooleanField(widget=widg.CheckboxInput(attrs={'class':'form-group'}), required=False)
+    down_stream = forms.BooleanField(widget=widg.CheckboxInput(attrs={'class':'form-group'}), required=False)
 
     class Meta:
         fields = ('node', 'up_stream', 'down_stream')
 
 
 class PathBetweenForm(forms.Form):
-    start = forms.CharField()
-    end = forms.CharField()
-    bi_dir = forms.BooleanField(widget=widg.CheckboxInput(), required=False)
+    start = forms.CharField(widget=widg.TextInput({'class':'form-control'}))
+    end = forms.CharField(widget=widg.TextInput({'class':'form-control'}))
+    bi_dir = forms.BooleanField(widget=widg.CheckboxInput(attrs={'class':'form-control'}), required=False)
 
     class Meta:
         fields = ('start', 'end', 'bi_dir')

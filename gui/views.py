@@ -18,6 +18,11 @@ def index(reqest):
     )
 
 
+def network_stats(reqest):
+    return HttpResponse(
+        get_template('network_stats.html', using='jinja2').render()
+    )
+
 def post_detail(request, pk):
     ex = Data.objects.get(project_name=pk)
     return render(request, 'project_details.html', {'data': ex})
