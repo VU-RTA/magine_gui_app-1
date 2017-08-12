@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^path$', views.generate_path_between_two, name='path'),
     url(r'^neighbors$', views.generate_neighbors, name='neighbors'),
     url(r'^network_stats$', views.network_stats, name='network_stats'),
+    url(r'^measurements$', views.view_gene_table, name='measurements'),
+    url(r'^measurements_ajax$', views.myModel_asJson, name='measurements_ajax'),
     # url(r'^data/$', views.display_data, name='data'),
 ]

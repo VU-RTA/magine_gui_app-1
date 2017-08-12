@@ -3,7 +3,7 @@ services:
   magine:
     build: .
     volumes:
-      - ./_state/:/magine/_state/
+      - ./_state/:/magine_home/_state/
     environment:
       - UWSGI_PROCESSES=3
       - UWSGI_MASTER=1

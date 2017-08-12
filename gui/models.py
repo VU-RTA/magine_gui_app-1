@@ -5,13 +5,13 @@ import pandas as pd
 import json
 
 
-
 class Data(models.Model):
     project_name = models.CharField(max_length=200)
     upload_date = models.DateField(blank=True, null=True)
     #file_name_path = models.CharField(max_length=200, blank=True)
     stats = models.CharField(max_length=200, blank=True)
     times = models.CharField(max_length=200, blank=True)
+    all_data = models.CharField(max_length=2000000, blank=True)
 
     def publish(self):
         self.upload_date = timezone.now()
@@ -22,6 +22,7 @@ class Data(models.Model):
         _times = [str(i) for i in times]
         self.stats = json.dumps(stats)
         self.times = json.dumps(_times)
+        self.all_data = df.to_json()
 
     def get_stats(self):
         return json.loads(self.stats)
@@ -44,6 +45,7 @@ class Measurement(models.Model):
     protein = models.CharField(max_length=200, blank=True)
     compound = models.CharField(max_length=200, blank=True)
     compound_id = models.CharField(max_length=200, blank=True)
+    name = models.CharField(max_length=200, blank=True)
     p_value_group_1_and_group_2 = models.FloatField()  # 'p_value_group_1_and_group_2'
     treated_control_fold_change = models.FloatField()  # 'treated_control_fold_change'
     significant_flag = models.BooleanField()  # 'significant_flag'
@@ -51,6 +53,7 @@ class Measurement(models.Model):
     species_type = models.CharField(max_length=200)  # 'species_type'
     sample_id = models.CharField(max_length=200)  # 'time'
     data_type = models.CharField(max_length=100)
+    project_name = models.CharField(max_length=200, blank=True)
 
 
 class Dataset(models.Model):

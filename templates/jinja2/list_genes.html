@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
+    <link href="https://yadcf-showcase.appspot.com/resources/css/jquery.dataTables.yadcf.css" rel="stylesheet"
+          type="text/css"/>
+
+
+    <script src="https://yadcf-showcase.appspot.com/resources/js/jquery.dataTables.yadcf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.js"></script>
+
+{% endblock %}
+{% block content %}
+
+    <body>
+    <table id="table" class="display" width="100%">
+        <thead>
+        <tr>
+            <th>gene</th>
+            <th>protein</th>
+            <th>P-value</th>
+            <th>Fold Change</th>
+            <th>Significant</th>
+            <th>exp_method</th>
+            <th>sample_id</th>
+        </tr>
+        </thead>
+
+    </table>
+
+    <script>
+        var table = $('table').DataTable({
+            "ajax": "{{ url("measurements_ajax")}}",
+            deferRender: true,
+            scrollCollapse: true,
+            scroller: true
+        });
+
+        yadcf.init(table, [
+            {column_number: 0, filter_type: "multi_select", select_type: 'select2'},
+            {column_number: 1, filter_type: "auto_complete", text_data_delimiter: ","},
+            {column_number: 2, filter_type: "range_number"},
+            {column_number: 3, filter_type: "range_number"},
+            {column_number: 4},
+            {column_number: 5, filter_type: "multi_select", select_type: "select2"},
+            {column_number: 6, filter_type: "multi_select", select_type: "select2"},
+
+
+        ]);
+
+    </script>
+{% endblock %}
