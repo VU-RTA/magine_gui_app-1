@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+from magine.data.datatypes import create_table_of_data
 fold_change = 'treated_control_fold_change'
 flag = 'significant_flag'
 exp_method = 'data_type'
@@ -24,75 +24,16 @@ def get_significant_numbers(data, sig, unique):
     -------
 
     """
-    # data_types = data['data_type'].unique()
-    tmp_data = data.copy()
-    exp_methods = data[exp_method].unique()
 
-    if sig:
-        tmp_data = tmp_data[tmp_data[flag]]
-    meta_d = tmp_data[tmp_data[species_type] == metabolites].copy()
-
-    exp_methods_metabolite = meta_d[exp_method].unique()
-
-    do_metab = True
-    if len(meta_d) == 0:
-        do_metab = False
-
-    gene_d = tmp_data[tmp_data[species_type] == protein].copy()
-
-    if unique:
-        if do_metab:
-            tmp_data1 = meta_d.pivot_table(values='compound',
-                                           index=exp_method, columns='time',
-                                           aggfunc=lambda x:
-                                           x.dropna().nunique())
-
-        tmp_data2 = gene_d.pivot_table(values='gene', index=exp_method,
-                                       columns='time',
-                                       aggfunc=lambda x:
-                                       x.dropna().nunique())
-
-        unique_col = []
-        for i in exp_methods:
-            if i in exp_methods_metabolite:
-                n = len(tmp_data[tmp_data[exp_method] == i][
-                            'compound'].dropna().unique())
-            else:
-                n = len(tmp_data[tmp_data[exp_method] == i][
-                            'gene'].dropna().unique())
-            unique_col.append(int(n))
-    else:
-        if do_metab:
-            tmp_data1 = meta_d.pivot_table(values='compound_id',
-                                           index=exp_method,
-                                           columns='time',
-                                           aggfunc=lambda x:
-                                           x.dropna().nunique())
-        tmp_data2 = gene_d.pivot_table(values='protein', index=exp_method,
-                                       columns='time',
-                                       aggfunc=lambda x:
-                                       x.dropna().nunique())
-        unique_col = []
-        for i in exp_methods:
-            if i in exp_methods_metabolite:
-                n = len(tmp_data[tmp_data[exp_method] == i][
-                            'compound_id'].dropna().unique())
-            else:
-                n = len(tmp_data[tmp_data[exp_method] == i][
-                            'protein'].dropna().unique())
-            unique_col.append(int(n))
-    if do_metab:
-        t = pd.concat([tmp_data1, tmp_data2])
-    else:
-        t = tmp_data2.fillna('-')
-
-    t['Total Unique Across'] = pd.Series(unique_col, index=t.index)
+    t = create_table_of_data(data, sig=sig, unique=unique)
+    t = t.replace('-', np.nan)
     t_dict = t.to_dict()
     new_dict = dict()
     for time, i in t_dict.items():
         for key, value in i.items():
             if value not in (np.nan, 'Total Unique Across'):
-                value = float(value)
+                if np.isfinite(value):
+                    value = int(value)
             if key in new_dict:
 
                 new_dict[key][time] = value
@@ -105,7 +46,8 @@ def get_significant_numbers(data, sig, unique):
         if not isinstance(i, str):
             i = float(i)
         times.append(i)
-    return new_dict, times
+    times = [str(i) for i in times]
+    return times, new_dict
 
 if __name__ == '__main__':
     df = pd.read_csv('/home/pinojc/PycharmProjects/magine_gui_app/gui/test_data/norris_et_al_2017_cisplatin_data.csv.gz',

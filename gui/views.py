@@ -1,11 +1,9 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.http import HttpResponse
-from django.utils.html import mark_safe
 from django.template.loader import get_template
 from gui.data_functions import get_significant_numbers
 import pandas as pd
-from django.core import serializers
 from .forms import ProjectForm, ListOfSpeciesFrom, PathBetweenForm, \
     NodeNeighborsForm
 from .models import Data, Measurement
@@ -13,7 +11,7 @@ from gui.network_functions import path_between, create_subgraph, neighbors
 import json
 
 
-def index(reqest):
+def index(request):
     projects = Data.objects.all()
     _data = {'projects': projects}
     return HttpResponse(
@@ -21,7 +19,7 @@ def index(reqest):
     )
 
 
-def network_stats(reqest):
+def network_stats(request):
     return HttpResponse(
         get_template('network_stats.html', using='jinja2').render()
     )
@@ -29,7 +27,14 @@ def network_stats(reqest):
 
 def post_detail(request, pk):
     ex = Data.objects.get(project_name=pk)
-    return render(request, 'project_details.html', {'data': ex})
+    times, all_m, uni_m, sig_m, sig_uni_m = ex.all_measurements()
+    return render(request, 'project_details.html', {'time': times,
+                                                    'project_name': pk,
+                                                    'all_unique_table': uni_m,
+                                                    'all_table': all_m,
+                                                    'sig_measured_table': sig_m,
+                                                    'sig_unique_table': sig_uni_m,
+                                                    })
 
 
 def post_table(request):

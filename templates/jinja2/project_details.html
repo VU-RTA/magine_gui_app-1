@@ -2,38 +2,114 @@
 
 {% block content %}
     <div class="container-fluid">
-        <div class="post">
-            <h1> Project name : {{ data.project_name }}</h1>
+        <ul class="nav nav-tabs" id="product-table">
+            <li><a href="#1" data-toggle="tab">All measured</a>
+            </li>
+            <li><a href="#2" data-toggle="tab">Unique measured</a>
+            </li>
+            <li><a href="#3" data-toggle="tab">Significantly changed</a>
+            </li>
+            <li><a href="#4" data-toggle="tab">Significantly changed unique</a>
+            </li>
+        </ul>
+        <h1> Project name : {{ project_name }}</h1>
 
-            <table id="table" class="table table-condensed">
-                <thead>
-                <tr>
-                    <td><b>Experimental method</b></td>
-                    {% for cell in data.get_times() %}
-                        <td><b>{{ cell }}</b></td>
-                    {% endfor %}
-                </tr>
-                </thead>
-                <tbody>
-                {% for item, new_list in data.get_stats().items() %}
+        <div class="tab-content">
+            <div class="tab-pane" id="1">
+                <table class="table table-condensed table-bordered table-striped volumes">
+                    <thead>
                     <tr>
-                        <th>{{ item }}</th>
-                        {% for key, value in new_list.items() %}
-                            <td> {{ value }}</td>
+                        <td><b>Experimental method</b></td>
+                        {% for t in time %}
+                            <td><b>{{ t }}</b></td>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-
-
+                    </thead>
+                    <tbody>
+                    {% for item, new_list in all_table.items() %}
+                        <tr>
+                            <th>{{ item }}</th>
+                            {% for key, value in new_list.items() %}
+                                <td> {{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="2">
+                <table class="table table-condensed table-bordered table-striped volumes">
+                    <thead>
+                    <tr>
+                        <td><b>Experimental method</b></td>
+                        {% for t in time %}
+                            <td><b>{{ t }}</b></td>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item, new_list in all_unique_table.items() %}
+                        <tr>
+                            <th>{{ item }}</th>
+                            {% for key, value in new_list.items() %}
+                                <td> {{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="3">
+                <table class="table table-condensed table-bordered table-striped volumes">
+                    <thead>
+                    <tr>
+                        <td><b>Experimental method</b></td>
+                        {% for t in time %}
+                            <td><b>{{ t }}</b></td>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item, new_list in sig_measured_table.items() %}
+                        <tr>
+                            <th>{{ item }}</th>
+                            {% for key, value in new_list.items() %}
+                                <td> {{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="4">
+                <table class="table table-condensed table-bordered table-striped volumes">
+                    <thead>
+                    <tr>
+                        <td><b>Experimental method</b></td>
+                        {% for t in time %}
+                            <td><b>{{ t }}</b></td>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item, new_list in sig_unique_table.items() %}
+                        <tr>
+                            <th>{{ item }}</th>
+                            {% for key, value in new_list.items() %}
+                                <td> {{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             <script>
                 $(document).ready(function () {
                     $('table').DataTable({
-                        searchDelay: 250
+                        bFilter: false,
+                        paging:   false,
                     });
                 });
             </script>
         </div>
-    </div>
 {% endblock %}

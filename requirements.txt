@@ -2,4 +2,4 @@ django
 jinja2
 numpy
 pandas
-
+django-picklefield

@@ -22,6 +22,21 @@ def add_cisplatin():
     new.save()
 
 
+def add_meth():
+
+    there = Data.objects.all()
+    there.filter(project_name='methotrexate')
+    if len(there) > 0:
+        there.delete()
+
+    new = Data.objects.create(project_name='methotrexate')
+    new.set_exp_data(
+        os.path.join(os.path.dirname(__file__),
+                     'data.csv.gz')
+    )
+    new.save()
+
+
 def add_project_measurements():
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),
                      'norris_et_al_2017_cisplatin_data.csv.gz'),
@@ -45,4 +60,5 @@ def add_project_measurements():
 
 if __name__ == '__main__':
     # add_cisplatin()
-    add_project_measurements()
+    # add_project_measurements()
+    add_meth()
