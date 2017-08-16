@@ -12,7 +12,14 @@ class ProjectForm(forms.ModelForm):
 
 
 class ListOfSpeciesFrom(forms.Form):
-    list_of_species = forms.CharField(widget=widg.Textarea())
+    list_of_species = forms.CharField(widget=widg.Textarea(), empty_value='')
+
+    class Meta:
+        fields = ('species_list',)
+
+
+class ListOfSpeciesOntology(forms.Form):
+    list_of_species = forms.CharField(widget=widg.Textarea(), empty_value='')
 
     class Meta:
         fields = ('species_list',)

@@ -73,6 +73,8 @@
                     <li><a href="{{ url('neighbors') }}">Neighbors of a node</a></li>
                 </ul>
             </li>
+
+         <li><a href="{{ url('enrichment') }}">Enrichment from list</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown-toggle"><a class="dropdown-toggle" data-toggle="dropdown" href="#">About MAGINE <span
@@ -91,7 +93,12 @@
 
     </div>
 </nav>
-<div id="content">{% block content %}{% endblock %}</div>
+
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+
 </body>
 
 </html>

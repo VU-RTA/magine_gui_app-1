@@ -1,0 +1,24 @@
+{% extends "project_details.html" %}
+{% block title %}Generate Subgraph{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-6">
+            <h1>Enrichment of single list</h1>
+            <p>Please provide a list of comma separates genes for enrichment analysis
+            </p>
+            <form class="form-group" method="GET">
+                {{ form.as_p()|safe }}
+{#                <label for="id_list_of_species">List of species:</label>#}
+{#                <ul class="errorlist">#}
+{#                    <li>This field is required.</li>#}
+{#                </ul>#}
+{#                <textarea class="form-control" rows="5" name="list_of_species"#}
+{#                          required id="id_list_of_species">#}
+{#                </textarea>#}
+                <input type="submit" value="Submit"/>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

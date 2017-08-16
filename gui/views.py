@@ -1,15 +1,15 @@
+import json
+import pandas as pd
+import gui.forms as forms
+from .models import Data, Measurement
+from gui.network_functions import path_between, create_subgraph, neighbors
+
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import get_template
 from gui.data_functions import get_significant_numbers
-import pandas as pd
-from .forms import ProjectForm, ListOfSpeciesFrom, PathBetweenForm, \
-    NodeNeighborsForm
-from .models import Data, Measurement
-from gui.network_functions import path_between, create_subgraph, neighbors
-import json
-
+from gui.enrichment_functions.enrichr_helper import return_table
 
 def index(request):
     projects = Data.objects.all()
@@ -25,16 +25,18 @@ def network_stats(request):
     )
 
 
-def post_detail(request, pk):
+def project_detail(request, pk):
     ex = Data.objects.get(project_name=pk)
     times, all_m, uni_m, sig_m, sig_uni_m = ex.all_measurements()
-    return render(request, 'project_details.html', {'time': times,
-                                                    'project_name': pk,
-                                                    'all_unique_table': uni_m,
-                                                    'all_table': all_m,
-                                                    'sig_measured_table': sig_m,
-                                                    'sig_unique_table': sig_uni_m,
-                                                    })
+    content = {
+        'time': times,
+        'project_name': pk,
+        'all_unique_table': uni_m,
+        'all_table': all_m,
+        'sig_measured_table': sig_m,
+        'sig_unique_table': sig_uni_m,
+    }
+    return render(request, 'project_details.html', content)
 
 
 def post_table(request):
@@ -56,7 +58,7 @@ def post_table(request):
 # FORMS
 def add_new_project(request):
     if request.method == "POST":
-        form = ProjectForm(request.POST, request.FILES)
+        form = forms.ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.set_exp_data(form.cleaned_data['file'])
@@ -67,13 +69,32 @@ def add_new_project(request):
             post.save()
             return redirect('post_detail', pk=post.project_name)
     else:
-        form = ProjectForm()
+        form = forms.ProjectForm()
         return render(request, 'add_data.html', {'form': form})
+
+
+def ontology_analysis_from_list(request):
+    if request.method == "GET":
+        form = forms.ListOfSpeciesOntology(request.GET)
+        if form.is_valid():
+            genes = form.cleaned_data['list_of_species'].split(',')
+            names = []
+            for i in genes:
+                i = i.upper()
+                i = i.replace(' ', '')
+                names.append(i)
+            data = return_table(genes)
+            # data = json.dumps(data)
+            template = get_template('simple_table_view.html', using='jinja2')
+            return HttpResponse(template.render(data))
+    else:
+        form = forms.ListOfSpeciesOntology()
+    return render(request, 'form_ontology_from_list.html', {'form': form})
 
 
 def generate_subgraph_from_list(request):
     if request.method == "GET":
-        form = ListOfSpeciesFrom(request.GET)
+        form = forms.ListOfSpeciesFrom(request.GET)
         if form.is_valid():
             post = form.cleaned_data['list_of_species'].split(',')
             names = []
@@ -91,13 +112,13 @@ def generate_subgraph_from_list(request):
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(response))
     else:
-        form = ListOfSpeciesFrom()
+        form = forms.ListOfSpeciesFrom()
     return render(request, 'form_species_list.html', {'form': form})
 
 
 def generate_path_between_two(request):
     if request.method == "GET":
-        form = PathBetweenForm(request.GET)
+        form = forms.PathBetweenForm(request.GET)
         if form.is_valid():
             start = form.cleaned_data['start']
             end = form.cleaned_data['end']
@@ -113,13 +134,13 @@ def generate_path_between_two(request):
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(data))
     else:
-        form = PathBetweenForm()
+        form = forms.PathBetweenForm()
     return render(request, 'form_species_to_species.html', {'form': form})
 
 
 def generate_neighbors(request):
     if request.method == "GET":
-        form = NodeNeighborsForm(request.GET)
+        form = forms.NodeNeighborsForm(request.GET)
         if form.is_valid():
             node = form.cleaned_data['node']
             start = node.upper()
@@ -135,7 +156,7 @@ def generate_neighbors(request):
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(data))
     else:
-        form = NodeNeighborsForm()
+        form = forms.NodeNeighborsForm()
     return render(request, 'form_graph_neighbors.html', {'form': form})
 
 
