@@ -2,7 +2,6 @@ from magine.ontology.enrichr import Enrichr
 
 e = Enrichr()
 
-
 range_number = 'column_number:{},' \
                'filter_type: "range_number"'
 
@@ -12,10 +11,9 @@ auto_complete = 'column_number:{},' \
 
 chosen = 'column_number:{}, ' \
          'filter_type: "multi_select",' \
-         'select_type: "select2",'\
-         'select_type_options: {{width: \'150px\'}}, '\
+         'select_type: "select2",' \
+         'select_type_options: {{width: \'150px\'}}, ' \
          'text_data_delimiter: ","'
-
 
 html_selector = 'column_number:{},' \
                 'column_data_type: "html",' \
@@ -50,30 +48,27 @@ dict_of_templates = dict(GO_id=range_number,
                          time=chosen,
                          compound=auto_complete,
                          compound_id=auto_complete,
+                         db=chosen,
 
                          )
 
 
 def yadf_filter(table):
-
     n = 0
     out_string = ''
     for n, i in enumerate(table.index.names):
-        print(n,i)
         if i not in dict_of_templates:
-            print(i)
             continue
         new_string = dict_of_templates[i].format(n)
         out_string += '{' + new_string + '},\n'
 
     for m, i in enumerate(table.columns):
-        print(m+n, i)
+
         if isinstance(i, str):
             new_string = dict_of_templates[i].format(n + m)
             out_string += '{' + new_string + '},\n'
             continue
         elif i not in dict_of_templates:
-            print(i)
             continue
         new_string = dict_of_templates[i[0]].format(n + m)
         out_string += '{' + new_string + '},\n'
@@ -119,8 +114,8 @@ def _format_simple_table(data):
     return tmp_table
 
 
-def return_table(list_of_genes):
-    df = e.run(list_of_genes)
+def return_table(list_of_genes, ont):
+    df = e.run_set_of_dbs(list_of_genes, db=ont)
     tmp_table = _format_simple_table(df)
     d = yadf_filter(tmp_table)
     data = tmp_table.to_dict('split')

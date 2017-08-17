@@ -4,17 +4,10 @@ import os
 from magine.networks.network_subgraphs import NetworkSubgraphs
 
 
-def run():
-    from magine.networks.network_generator import create_background_network
-    create_background_network('networks/background_network')
-
-
 _g_path = os.path.join(os.path.dirname(__file__),
                        'networks',
                        'background_network.p')
 
-if not os.path.exists(_g_path):
-    run()
 
 g = nx.read_gpickle(_g_path)
 subgraph_gen = NetworkSubgraphs(g)
@@ -52,7 +45,7 @@ def path_between(source, end, bi_dir):
 
 
 if __name__ == '__main__':
-    neighbors('BAX', True, False)
-    neighbors('BAX', False, True)
-    neighbors('BAX', True, True)
-
+    # neighbors('BAX', True, False)
+    # neighbors('BAX', False, True)
+    # neighbors('BAX', True, True)
+    create_subgraph('H2AFX,ATM,MRE11,RAD50,TP53BP1'.split(','))

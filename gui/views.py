@@ -83,7 +83,10 @@ def ontology_analysis_from_list(request):
                 i = i.upper()
                 i = i.replace(' ', '')
                 names.append(i)
-            data = return_table(genes)
+            ont = form.cleaned_data['ontology']
+
+            data = return_table(genes, ont)
+
             # data = json.dumps(data)
             template = get_template('simple_table_view.html', using='jinja2')
             return HttpResponse(template.render(data))

@@ -20,9 +20,16 @@ class ListOfSpeciesFrom(forms.Form):
 
 class ListOfSpeciesOntology(forms.Form):
     list_of_species = forms.CharField(widget=widg.Textarea(), empty_value='')
-
+    CHOICES = (
+        ('transcription_factors', 'transcription_factors'),
+         ('pathways', 'pathways'),
+          ('kinases', 'kinases'),
+           ('drug', 'drug'),
+        ('ontologies','ontologies')
+    )
+    ontology = forms.ChoiceField(choices=CHOICES)
     class Meta:
-        fields = ('species_list',)
+        fields = ('species_list', 'ontology')
 
 
 class NodeNeighborsForm(forms.Form):
