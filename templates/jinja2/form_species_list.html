@@ -10,13 +10,11 @@
                 connections between each species provided, including any species that complete a path between.
             </p>
             <form class="form-group" method="GET">
-                <label for="id_list_of_species">List of species:</label>
-                <ul class="errorlist">
-                    <li>This field is required.</li>
-                </ul>
-                <textarea class="form-control" rows="5" name="list_of_species"
-                          required id="id_list_of_species">
-                </textarea>
+                <div class="fieldWrapper form-group">
+                    <label for="{{ form.list_of_species.id_for_label }}">List of species:</label>
+                    <br>
+                    {{ form.list_of_species }}
+                </div>
                 <input type="submit" value="Submit"/>
             </form>
 
