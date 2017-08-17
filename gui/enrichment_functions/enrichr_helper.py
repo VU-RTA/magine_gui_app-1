@@ -20,7 +20,6 @@ html_selector = 'column_number:{},' \
                 'filter_type: "multi_select",' \
                 'select_type: "chosen"'
 
-dict_of_templates = dict()
 # GO
 dict_of_templates = dict(GO_id=range_number,
                          GO_name=chosen,
@@ -117,6 +116,7 @@ def _format_simple_table(data):
 def return_table(list_of_genes, ont):
     df = e.run_set_of_dbs(list_of_genes, db=ont)
     tmp_table = _format_simple_table(df)
+    tmp_table['genes'] = tmp_table['genes'].str.split(',').str.join(', ')
     d = yadf_filter(tmp_table)
     data = tmp_table.to_dict('split')
     data['filters'] = d
@@ -126,3 +126,5 @@ def return_table(list_of_genes, ont):
 
 if __name__ == '__main__':
     return_table(['BAX', 'BCL2', 'MCL1', 'CASP3', 'CASP8'])
+
+
