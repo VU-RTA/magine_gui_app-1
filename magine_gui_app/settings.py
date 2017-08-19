@@ -95,10 +95,6 @@ DATABASES = {
     }
 }
 
-# django-import-export settings
-# not sure if this is required
-IMPORT_EXPORT_USE_TRANSACTIONS = True
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

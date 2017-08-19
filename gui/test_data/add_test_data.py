@@ -23,7 +23,7 @@ def add_cisplatin():
 
 
 def add_meth():
-
+    print('saving methotrexate')
     there = Data.objects.all()
     there.filter(project_name='methotrexate')
     if len(there) > 0:
@@ -35,6 +35,8 @@ def add_meth():
                      'data.csv.gz')
     )
     new.save()
+    print(new.get_time_points())
+    print('saved')
 
 
 def add_project_measurements():

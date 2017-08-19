@@ -49,6 +49,15 @@ def get_significant_numbers(data, sig, unique):
     times = [str(i) for i in times]
     return times, new_dict
 
+
+def get_all_tables(data):
+    time, all_measured = get_significant_numbers(data, unique=False, sig=False)
+    time, uni_measured = get_significant_numbers(data, unique=True, sig=False)
+    time, sig_measured = get_significant_numbers(data, unique=False, sig=True)
+    time, sig_uni = get_significant_numbers(data, unique=True, sig=True)
+    return time, all_measured, uni_measured, sig_measured, sig_uni
+
+
 if __name__ == '__main__':
     df = pd.read_csv('/home/pinojc/PycharmProjects/magine_gui_app/gui/test_data/norris_et_al_2017_cisplatin_data.csv.gz',
                      low_memory=False)

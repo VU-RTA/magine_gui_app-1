@@ -12,5 +12,6 @@ services:
       - UWSGI_ENABLE_THREADS=1
       - UWSGI_UID=www-data
       - UWSGI_GID=www-data
+      - UWSGI_BUFFER_SIZE=32768
     ports:
       - "8000:8000"
