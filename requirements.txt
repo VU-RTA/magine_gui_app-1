@@ -1,5 +1,14 @@
 django
 jinja2
+django-picklefield
+django-import-export
 numpy
 pandas
-django-picklefield
+networkx
+scipy
+xlrd
+matplotlib
+bioservices
+pathos
+appdirs
+plotly

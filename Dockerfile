@@ -5,7 +5,7 @@ ENV MAGINE_HOME=/magine_home
 
 RUN mkdir $MAGINE_HOME
 WORKDIR $MAGINE_HOME
-ADD requirements.txt requirements-production.txt Magine/requirements.txt $MAGINE_HOME/
+ADD requirements.txt requirements-production.txt $MAGINE_HOME/
 ADD . $MAGINE_HOME
 RUN pip install -r requirements-production.txt
 ENV PYTHONPATH /magine_home/Magine:$PYTHONPATH

@@ -25,7 +25,7 @@ SECRET_KEY = '4am#0a-x##pt+_*%%8tp+f&hqf@a7on=%0o$zuq1(wo=-i-@(^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['magine.lolab.xyz', '127.0.0.1']
+ALLOWED_HOSTS = ['magine.lolab.xyz', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -94,6 +94,10 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, '_state/db.sqlite3'),
     }
 }
+
+# django-import-export settings
+# not sure if this is required
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 
 # Password validation

@@ -17,10 +17,10 @@ class Data(models.Model):
     time_points = models.CharField(max_length=2000, blank=True)
     modality = models.CharField(max_length=2000, blank=True)
     time = models.CharField(max_length=2000, blank=True)
-    all_measured = models.CharField(max_length=2000, blank=True)
-    uni_measured = models.CharField(max_length=2000, blank=True)
-    sig_measured = models.CharField(max_length=2000, blank=True)
-    sig_uni = models.CharField(max_length=2000, blank=True)
+    all_measured = models.CharField(max_length=20000, blank=True)
+    uni_measured = models.CharField(max_length=20000, blank=True)
+    sig_measured = models.CharField(max_length=20000, blank=True)
+    sig_uni = models.CharField(max_length=20000, blank=True)
 
     def publish(self):
         self.upload_date = timezone.now()
@@ -29,13 +29,12 @@ class Data(models.Model):
         data = pd.read_csv(file, low_memory=False)
         self.time_points = ','.join(list(data['time'].astype(str).unique()))
         self.modality = ','.join(list(data['data_type'].unique()))
-        time, all_measured, uni_measured, sig_measured, sig_uni = get_all_tables(
-            data)
-        self.time = time
-        self.all_measured = all_measured
-        self.uni_measured = uni_measured
-        self.sig_measured = sig_measured
-        self.sig_uni = sig_uni
+        time, all_m, uni_m, sig_m, sig_uni = get_all_tables(data)
+        self.time = json.dumps(time)
+        self.all_measured = json.dumps(all_m)
+        self.uni_measured = json.dumps(uni_m)
+        self.sig_measured = json.dumps(sig_m)
+        self.sig_uni = json.dumps(sig_uni)
         self.data = data
         self.save()
 
@@ -81,9 +80,20 @@ class Dataset(models.Model):
 
 class EnrichmentOutput(models.Model):
     project_name = models.CharField(max_length=200, blank=True)
-    database = models.CharField(max_length=200, blank=True)
-    data = PickledObjectField(compress=True, blank=True)
+    db = models.CharField(max_length=200, blank=True)
 
-    def set_exp_data(self, file):
-        self.data = pd.read_csv(file, low_memory=False)
-        self.save()
+    term_name = models.CharField(max_length=20000, blank=True)
+    term_id = models.CharField(max_length=20000, blank=True)
+    sample_id = models.CharField(max_length=20000, blank=True)
+    genes = models.CharField(max_length=20000, blank=True)
+
+    n_genes = models.IntegerField(blank=True, default=0)
+    rank = models.IntegerField(blank=True, default=0)
+
+    z_score = models.FloatField(blank=True, default=0)
+    p_value = models.FloatField(blank=True, default=0)
+    adj_p_value = models.FloatField(blank=True, default=0)
+    combined_score = models.FloatField(blank=True, default=0)
+
+
+

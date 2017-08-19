@@ -10,12 +10,12 @@
             <div class="row content">
                 <div class="col-sm-3 sidenav">
                 <ul class="list-group">
-                            <a href="{{ url('add_new_project') }}" class="top-menu"><span
+                            <a href="{{ url('add') }}" class="top-menu"><span
                                     class="glyphicon glyphicon-plus"></span> Add Project</a>
 
                             {% for project in projects %}
 
-                            <li class="list-group-item"> <a href="post/{{ project.project_name }}"
+                            <li class="list-group-item"> <a href="{{ project.project_name }}"
                                    target="_blank">{{ project.project_name }}</a> </li>
 
                             {% endfor %}

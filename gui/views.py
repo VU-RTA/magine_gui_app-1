@@ -1,13 +1,13 @@
 import json
 import gui.forms as forms
-from .models import Data
+from .models import Data, EnrichmentOutput
 from gui.network_functions import path_between, create_subgraph, neighbors
 
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import get_template
-from gui.enrichment_functions.enrichr_helper import return_table
+from gui.enrichment_functions.enrichr_helper import return_table, model_to_json
 
 
 def index(request):
@@ -24,12 +24,32 @@ def network_stats(request):
     )
 
 
-def project_detail(request, pk):
-    ex = Data.objects.get(project_name=pk)
+def project_details(request, project_name):
+    ex = Data.objects.get(project_name=project_name)
+    meas = json.loads(ex.all_measured)
+    uni = json.loads(ex.uni_measured)
+    time = json.loads(ex.time)
+    uni_sig = json.loads(ex.sig_uni)
+    sig = json.loads(ex.sig_measured)
     content = {
         'data': ex,
+        'time' : time,
+        'all_measured': meas,
+        'uni_measured': uni,
+        'sig_measured':sig ,
+        'sig_uni':uni_sig ,
     }
     return render(request, 'project_details.html', content)
+
+
+def project_enrichment(request, pk):
+    print('pk', pk)
+
+    ex = EnrichmentOutput.objects.filter(project_name=pk).values()
+    data = model_to_json(ex)
+
+    # template = get_template('simple_table_view.html', using='jinja2')
+    return render(request, 'simple_table_view.html', data)
 
 
 # FORMS
@@ -59,10 +79,8 @@ def ontology_analysis_from_list(request):
                 i = i.replace(' ', '')
                 names.append(i)
             ont = form.cleaned_data['ontology']
-
             data = return_table(genes, ont)
 
-            # data = json.dumps(data)
             template = get_template('simple_table_view.html', using='jinja2')
             return HttpResponse(template.render(data))
     else:

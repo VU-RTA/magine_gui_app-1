@@ -7,7 +7,7 @@ sys.path.append(path)
 
 from django.core.wsgi import get_wsgi_application
 get_wsgi_application()
-from gui.models import Data, Measurement
+from gui.models import Data, Measurement, EnrichmentOutput
 
 
 def add_cisplatin():
@@ -39,6 +39,27 @@ def add_meth():
     print('saved')
 
 
+def add_enrichment():
+    from magine.ontology.enrichr import Enrichr
+    from magine.data.datatypes import ExperimentalData
+    EnrichmentOutput.objects.all().delete()
+    e = Enrichr()
+    d = Data.objects.all()
+    meth = d.filter(project_name='methotrexate')[0]
+    exp = ExperimentalData(meth.data)
+
+    for genes, sample_id in zip(exp.proteomics_up_over_time, exp.proteomics_time_points):
+        df = e.run_set_of_dbs(genes, db='pathways')
+        dict_list = df.to_dict(orient='records')
+        for i in dict_list:
+
+            m = EnrichmentOutput.objects.create(
+                project_name='methotrexate',
+                sample_id=sample_id,
+                **i)
+            m.save()
+
+
 def add_project_measurements():
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),
                      'norris_et_al_2017_cisplatin_data.csv.gz'),
@@ -63,4 +84,5 @@ def add_project_measurements():
 if __name__ == '__main__':
     # add_cisplatin()
     # add_project_measurements()
-    add_meth()
+    # add_meth()
+    add_enrichment()

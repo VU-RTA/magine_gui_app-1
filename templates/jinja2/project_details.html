@@ -3,6 +3,8 @@
 {% block content %}
     <div class="container-fluid">
         <h1> Project name : {{ data.project_name }}</h1>
+        <h3>  <a href="{{data.project_name}}/results"
+                                   target="_blank">{{ data.project_name }}</a> </h3>
 {#        <ul>#}
 {#            {% for i in data.get_time_points() %}#}
 {#                <li> {{ i }}</li>#}
@@ -26,16 +28,17 @@
                         <thead>
                         <tr>
                             <td><b>Experimental method</b></td>
-                            {% for t in data.time %}
+                            {% for t in time %}
+
                                 <td><b>{{ t }}</b></td>
                             {% endfor %}
                         </tr>
                         </thead>
                         <tbody>
-                        {% for item, new_list in data.all_measured %}
+                        {% for item, new_list in all_measured.items() %}
                             <tr>
                                 <th>{{ item }}</th>
-                                {% for key, value in new_list %}
+                                {% for key, value in new_list.items() %}
                                     <td> {{ value }}</td>
                                 {% endfor %}
                             </tr>
@@ -48,13 +51,13 @@
                         <thead>
                         <tr>
                             <td><b>Experimental method</b></td>
-                            {% for t in data.time %}
+                            {% for t in time %}
                                 <td><b>{{ t }}</b></td>
                             {% endfor %}
                         </tr>
                         </thead>
                         <tbody>
-                        {% for item, new_list in data.uni_measured.items() %}
+                        {% for item, new_list in uni_measured.items() %}
                             <tr>
                                 <th>{{ item }}</th>
                                 {% for key, value in new_list.items() %}
@@ -70,13 +73,13 @@
                         <thead>
                         <tr>
                             <td><b>Experimental method</b></td>
-                            {% for t in data.time %}
+                            {% for t in time %}
                                 <td><b>{{ t }}</b></td>
                             {% endfor %}
                         </tr>
                         </thead>
                         <tbody>
-                        {% for item, new_list in data.sig_measured.items() %}
+                        {% for item, new_list in sig_measured.items() %}
                             <tr>
                                 <th>{{ item }}</th>
                                 {% for key, value in new_list.items() %}
@@ -92,13 +95,13 @@
                         <thead>
                         <tr>
                             <td><b>Experimental method</b></td>
-                            {% for t in data.time %}
+                            {% for t in time %}
                                 <td><b>{{ t }}</b></td>
                             {% endfor %}
                         </tr>
                         </thead>
                         <tbody>
-                        {% for item, new_list in data.sig_uni.items() %}
+                        {% for item, new_list in sig_uni.items() %}
                             <tr>
                                 <th>{{ item }}</th>
                                 {% for key, value in new_list.items() %}

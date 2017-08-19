@@ -1,4 +1,5 @@
 from magine.ontology.enrichr import Enrichr
+import pandas as pd
 
 e = Enrichr()
 
@@ -48,7 +49,7 @@ dict_of_templates = dict(GO_id=range_number,
                          compound=auto_complete,
                          compound_id=auto_complete,
                          db=chosen,
-
+                         sample_id=chosen,
                          )
 
 
@@ -111,6 +112,24 @@ def _format_simple_table(data):
             tmp_table[i] = tmp_table[i].apply('{:,d}'.format)
 
     return tmp_table
+
+
+def model_to_json(model):
+
+    df = pd.DataFrame(list(model))
+    if 'id' in df.columns:
+        del df['id']
+    if 'project_name' in df.columns:
+        del df['project_name']
+    tmp_table = _format_simple_table(df)
+    cols = ['term_name', 'rank', 'p_value', 'z_score', 'combined_score',
+                'adj_p_value', 'genes', 'n_genes', 'sample_id', 'db']
+    tmp_table = tmp_table[cols]
+    d = yadf_filter(tmp_table)
+    data = tmp_table.to_dict('split')
+    data['filters'] = d
+    template_vars = {"data": data}
+    return template_vars
 
 
 def return_table(list_of_genes, ont):
