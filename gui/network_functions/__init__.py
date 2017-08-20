@@ -21,7 +21,7 @@ def create_subgraph(list_of_species):
     return from_networkx(new_g)
 
 
-def neighbors(node, up, down):
+def neighbors_including_cross_interactions(node, up, down):
 
     species = [node]
     if up:
@@ -30,6 +30,21 @@ def neighbors(node, up, down):
         species += g.successors(node)
 
     sg = nx.subgraph(g, species)
+    for i in sg.nodes():
+        sg.node[i]['label'] = i
+    return from_networkx(sg)
+
+
+def neighbors(node, up, down):
+
+    sg = nx.DiGraph()
+    if up:
+        for i in g.predecessors(node):
+            sg.add_edge(i, node, **g[i][node])
+    if down:
+        for i in g.successors(node):
+            sg.add_edge(node, i, **g[node][i])
+
     for i in sg.nodes():
         sg.node[i]['label'] = i
     return from_networkx(sg)
