@@ -35,15 +35,9 @@ def neighbors_including_cross_interactions(node, up, down):
     return from_networkx(sg)
 
 
-def neighbors(node, up, down):
+def neighbors(node, up, down, max_dist=1):
 
-    sg = nx.DiGraph()
-    if up:
-        for i in g.predecessors(node):
-            sg.add_edge(i, node, **g[i][node])
-    if down:
-        for i in g.successors(node):
-            sg.add_edge(node, i, **g[node][i])
+    sg = subgraph_gen.neighbors(node, up, down, max_dist)
 
     for i in sg.nodes():
         sg.node[i]['label'] = i

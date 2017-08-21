@@ -8,7 +8,8 @@
         <div class="col-sm-6">
             <h1>Node neighbors</h1>
             <p> Please provide a name of a biological species. They can be any species in the network.
-                The function then finds upstream, downstream, or both neighbors.
+                The function then finds upstream, downstream, or both neighbors. Select a maximum distance to continue
+                expanding neighbors.
             </p>
 
 
@@ -26,6 +27,10 @@
                 <div class="fieldWrapper form-group ">
                     <label for="{{ form.down_stream.id_for_label }}"> Downstream </label>
                     {{ form.down_stream }}
+                </div>
+                <div class="fieldWrapper form-group ">
+                    <label for="{{ form.max_dist.id_for_label }}"> Maximum distant </label>
+                    {{ form.max_dist }}
                 </div>
                 <input type="submit" value="Submit"/>
             </form>

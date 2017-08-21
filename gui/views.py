@@ -143,7 +143,8 @@ def generate_neighbors(request):
 
             up_stream = form.cleaned_data['up_stream']
             down_stream = form.cleaned_data['down_stream']
-            graph = neighbors(start, up_stream, down_stream)
+            max_dist = int(form.cleaned_data['max_dist'])
+            graph = neighbors(start, up_stream, down_stream, max_dist)
             data = {
                 'nodes': json.dumps(graph['elements']['nodes']),
                 'edges': json.dumps(graph['elements']['edges']),
@@ -152,5 +153,5 @@ def generate_neighbors(request):
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(data))
     else:
-        form = forms.NodeNeighborsForm()
+        form = forms.NodeNeighborsForm(initial={'max_dist':'1'})
     return render(request, 'form_graph_neighbors.html', {'form': form})
