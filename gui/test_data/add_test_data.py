@@ -84,5 +84,5 @@ def add_project_measurements():
 if __name__ == '__main__':
     # add_cisplatin()
     # add_project_measurements()
-    # add_meth()
+    add_meth()
     add_enrichment()

@@ -2,6 +2,7 @@ version: '3'
 services:
   magine:
     build: .
+    entrypoint: /entrypoint.sh
     volumes:
       - ./_state/:/magine_home/_state/
     environment:
