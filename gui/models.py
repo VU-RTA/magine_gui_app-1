@@ -80,6 +80,7 @@ class Dataset(models.Model):
 
 class EnrichmentOutput(models.Model):
     project_name = models.CharField(max_length=200, blank=True)
+    category = models.CharField(max_length=200, blank=True)
     db = models.CharField(max_length=200, blank=True)
 
     term_name = models.CharField(max_length=20000, blank=True)

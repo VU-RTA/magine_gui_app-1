@@ -34,22 +34,29 @@ def add_enrichment():
     meth = d.filter(project_name='methotrexate')[0]
     exp = ExperimentalData(meth.data)
 
-    for genes, sample_id in zip(exp.proteomics_up_over_time, exp.proteomics_time_points):
-        print("On sample {} of {}".format(sample_id, exp.proteomics_time_points))
-        df = e.run_set_of_dbs(genes, db='pathways')
-        dict_list = df.to_dict(orient='records')
-        for i in dict_list:
+    def _run(samples, timepoints, category):
+        for genes, sample_id in zip(samples, timepoints):
+            print("On sample {} of {}".format(sample_id, timepoints))
+            df = e.run_set_of_dbs(genes, db='pathways')
+            dict_list = df.to_dict(orient='records')
+            for i in dict_list:
+                m = EnrichmentOutput.objects.create(
+                    project_name='methotrexate',
+                    sample_id=sample_id,
+                    category=category,
+                    **i)
+                m.save()
+    _run(exp.proteomics_down_over_time, exp.proteomics_time_points, 'proteomics_down')
+    _run(exp.proteomics_up_over_time, exp.proteomics_time_points, 'proteomics_up')
+    _run(exp.proteomics_over_time, exp.proteomics_time_points, 'proteomics_both')
 
-            m = EnrichmentOutput.objects.create(
-                project_name='methotrexate',
-                sample_id=sample_id,
-                **i)
-            m.save()
+    _run(exp.rna_down_over_time, exp.rna_down_over_time, 'rna_down')
+    _run(exp.rna_up_over_time, exp.rna_down_over_time, 'rna_up')
+    _run(exp.rna_over_time, exp.rna_down_over_time, 'rna_both')
+
     print("Done with enrichment")
 
 
 if __name__ == '__main__':
-    # add_cisplatin()
-    # add_project_measurements()
-    add_meth()
-    # add_enrichment()
+    # add_meth()
+    add_enrichment()

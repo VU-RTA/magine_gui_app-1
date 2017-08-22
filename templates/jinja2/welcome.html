@@ -15,7 +15,7 @@
 
                             {% for project in projects %}
 
-                            <li class="list-group-item"> <a href="{{ project.project_name }}"
+                            <li class="list-group-item"> <a href="{{url('details', args=[project.project_name])}}"
                                    target="_blank">{{ project.project_name }}</a> </li>
 
                             {% endfor %}

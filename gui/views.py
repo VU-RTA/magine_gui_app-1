@@ -33,19 +33,19 @@ def project_details(request, project_name):
     sig = json.loads(ex.sig_measured)
     content = {
         'data': ex,
-        'time' : time,
+        'time': time,
         'all_measured': meas,
         'uni_measured': uni,
-        'sig_measured':sig ,
-        'sig_uni':uni_sig ,
+        'sig_measured': sig,
+        'sig_uni': uni_sig,
     }
     return render(request, 'project_details.html', content)
 
 
-def project_enrichment(request, pk):
-    print('pk', pk)
+def project_enrichment(request, project_name):
+    print('pk', project_name)
 
-    ex = EnrichmentOutput.objects.filter(project_name=pk).values()
+    ex = EnrichmentOutput.objects.filter(project_name=project_name).values()
     data = model_to_json(ex)
 
     # template = get_template('simple_table_view.html', using='jinja2')
@@ -153,5 +153,5 @@ def generate_neighbors(request):
             template = get_template('subgraph_view.html', using='jinja2')
             return HttpResponse(template.render(data))
     else:
-        form = forms.NodeNeighborsForm(initial={'max_dist':'1'})
+        form = forms.NodeNeighborsForm(initial={'max_dist': '1'})
     return render(request, 'form_graph_neighbors.html', {'form': form})
