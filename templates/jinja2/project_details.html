@@ -3,8 +3,8 @@
 {% block content %}
     <div class="container-fluid">
         <h1> Project name : {{ data.project_name }}</h1>
-        <h3>  <a href="{{url('results', args=[data.project_name])}}"
-                                   target="_blank">{{ data.project_name }}</a> </h3>
+        <h3>  <a href="{{url('filter')}}"
+                                   target="_blank">View enrichment output</a> </h3>
 {#        <ul>#}
 {#            {% for i in data.get_time_points() %}#}
 {#                <li> {{ i }}</li>#}

@@ -16,8 +16,7 @@ subgraph_gen = NetworkSubgraphs(g)
 def create_subgraph(list_of_species):
 
     new_g = subgraph_gen.shortest_paths_between_lists(list_of_species)
-    for i in new_g.nodes():
-        new_g.node[i]['label'] = i
+
     return from_networkx(new_g)
 
 
@@ -30,17 +29,12 @@ def neighbors_including_cross_interactions(node, up, down):
         species += g.successors(node)
 
     sg = nx.subgraph(g, species)
-    for i in sg.nodes():
-        sg.node[i]['label'] = i
     return from_networkx(sg)
 
 
 def neighbors(node, up, down, max_dist=1):
 
     sg = subgraph_gen.neighbors(node, up, down, max_dist)
-
-    for i in sg.nodes():
-        sg.node[i]['label'] = i
     return from_networkx(sg)
 
 
@@ -48,8 +42,6 @@ def path_between(source, end, bi_dir):
 
     new_g = subgraph_gen.shortest_paths_between_two_proteins(source, end,
                                                              bidirectional=bi_dir)
-    for i in new_g.nodes():
-        new_g.node[i]['label'] = i
     return from_networkx(new_g)
 
 

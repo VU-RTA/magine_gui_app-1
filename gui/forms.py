@@ -1,5 +1,5 @@
 from django import forms
-from .models import Data
+import gui.models as models
 import django.forms.widgets as widg
 
 
@@ -7,7 +7,7 @@ class ProjectForm(forms.ModelForm):
     file = forms.FileField(label='')
 
     class Meta:
-        model = Data
+        model = models.Data
         fields = ('project_name',)
 
 
@@ -45,6 +45,20 @@ class NodeNeighborsForm(forms.Form):
 
     class Meta:
         fields = ('node', 'up_stream', 'down_stream', 'max_dist')
+
+
+class EnrichmentDatasetForm(forms.Form):
+
+    DBS = models.EnrichmentOutput.objects.all().values_list('db','db').distinct()
+    PROJECT = models.EnrichmentOutput.objects.all().values_list('project_name','project_name').distinct()
+    CAT = models.EnrichmentOutput.objects.all().values_list('category','category').distinct()
+
+    project_name = forms.CharField(widget=forms.Select(choices=PROJECT))
+    category = forms.CharField(widget=widg.Select(choices=CAT))
+    dbs = forms.MultipleChoiceField(widget=widg.CheckboxSelectMultiple,choices=DBS)
+
+    class Meta:
+        fields = ['project_name', 'category', 'dbs', ]
 
 
 class PathBetweenForm(forms.Form):

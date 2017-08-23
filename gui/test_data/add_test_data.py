@@ -46,6 +46,7 @@ def add_enrichment():
                     category=category,
                     **i)
                 m.save()
+            quit()
     _run(exp.proteomics_down_over_time, exp.proteomics_time_points, 'proteomics_down')
     _run(exp.proteomics_up_over_time, exp.proteomics_time_points, 'proteomics_up')
     _run(exp.proteomics_over_time, exp.proteomics_time_points, 'proteomics_both')

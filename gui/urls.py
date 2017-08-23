@@ -8,7 +8,9 @@ urlpatterns = [
     url(r'^projects/(?P<project_name>[\w|\W]+)/', include([
         url(r'^details$', views.project_details, name='details'),
         url(r'^results$', views.project_enrichment, name='results'),
+
     ])),
+    url(r'^filter$', views.view_enrichment_from_model, name='filter'),
     # url(r'^(?P<project_name>[\w|\W]+)/results/', views.project_enrichment, name='results'),
     url(r'^subgraph$', views.generate_subgraph_from_list, name='subgraph'),
     url(r'^enrichment$', views.ontology_analysis_from_list, name='enrichment'),

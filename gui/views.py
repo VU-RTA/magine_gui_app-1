@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import get_template
-from gui.enrichment_functions.enrichr_helper import return_table, model_to_json
+from gui.enrichment_functions.enrichr_helper import return_table, model_to_json, return_table_from_model
 
 
 def index(request):
@@ -85,6 +85,21 @@ def ontology_analysis_from_list(request):
             return HttpResponse(template.render(data))
     else:
         form = forms.ListOfSpeciesOntology()
+    return render(request, 'form_ontology_from_list.html', {'form': form})
+
+
+def view_enrichment_from_model(request):
+    if request.method == "GET":
+        form = forms.EnrichmentDatasetForm(request.GET)
+        if form.is_valid():
+            project_name = form.cleaned_data['project_name']
+            category = form.cleaned_data['category']
+            dbs = form.cleaned_data['dbs']
+            data = return_table_from_model(project_name, category,dbs)
+            template = get_template('simple_table_view.html', using='jinja2')
+            return HttpResponse(template.render(data))
+    else:
+        form = forms.EnrichmentDatasetForm()
     return render(request, 'form_ontology_from_list.html', {'form': form})
 
 
