@@ -16,7 +16,6 @@ subgraph_gen = NetworkSubgraphs(g)
 def create_subgraph(list_of_species):
 
     new_g = subgraph_gen.shortest_paths_between_lists(list_of_species)
-
     return from_networkx(new_g)
 
 
@@ -28,7 +27,7 @@ def neighbors_including_cross_interactions(node, up, down):
     if down:
         species += g.successors(node)
 
-    sg = nx.subgraph(g, species)
+    sg = g.subgraph(species)
     return from_networkx(sg)
 
 

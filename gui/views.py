@@ -115,13 +115,7 @@ def generate_subgraph_from_list(request):
                 names.append(i)
 
             graph = create_subgraph(names)
-            response = {
-                'nodes': json.dumps(graph['elements']['nodes']),
-                'edges': json.dumps(graph['elements']['edges']),
-            }
-
-            template = get_template('subgraph_view.html', using='jinja2')
-            return HttpResponse(template.render(response))
+            return _json_graph(graph)
     else:
         form = forms.ListOfSpeciesFrom()
     return render(request, 'form_species_list.html', {'form': form})
@@ -137,13 +131,7 @@ def generate_path_between_two(request):
             end = end.upper()
             bi_dir = form.cleaned_data['bi_dir']
             graph = path_between(start, end, bi_dir)
-            data = {
-                'nodes': json.dumps(graph['elements']['nodes']),
-                'edges': json.dumps(graph['elements']['edges']),
-            }
-
-            template = get_template('subgraph_view.html', using='jinja2')
-            return HttpResponse(template.render(data))
+            return  _json_graph(graph)
     else:
         form = forms.PathBetweenForm()
     return render(request, 'form_species_to_species.html', {'form': form})
@@ -160,13 +148,19 @@ def generate_neighbors(request):
             down_stream = form.cleaned_data['down_stream']
             max_dist = int(form.cleaned_data['max_dist'])
             graph = neighbors(start, up_stream, down_stream, max_dist)
-            data = {
-                'nodes': json.dumps(graph['elements']['nodes']),
-                'edges': json.dumps(graph['elements']['edges']),
-            }
-
-            template = get_template('subgraph_view.html', using='jinja2')
-            return HttpResponse(template.render(data))
+            return _json_graph(graph)
     else:
         form = forms.NodeNeighborsForm(initial={'max_dist': '1'})
     return render(request, 'form_graph_neighbors.html', {'form': form})
+
+
+def _json_graph(graph):
+    nodes = graph['elements']['nodes']
+    edges = graph['elements']['edges']
+    data = {
+        'nodes': json.dumps(nodes),
+        'edges': json.dumps(edges),
+    }
+    template = get_template('subgraph_view.html', using='jinja2')
+
+    return HttpResponse(template.render(data))
