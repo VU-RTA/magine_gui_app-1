@@ -37,7 +37,7 @@ def add_enrichment():
     def _run(samples, timepoints, category):
         for genes, sample_id in zip(samples, timepoints):
             print("On sample {} of {}".format(sample_id, timepoints))
-            df = e.run_set_of_dbs(genes, db='pathways')
+            df = e.run_set_of_dbs(genes, db='all')
             dict_list = df.to_dict(orient='records')
             for i in dict_list:
                 m = EnrichmentOutput.objects.create(
@@ -47,13 +47,15 @@ def add_enrichment():
                     **i)
                 m.save()
             quit()
-    _run(exp.proteomics_down_over_time, exp.proteomics_time_points, 'proteomics_down')
-    _run(exp.proteomics_up_over_time, exp.proteomics_time_points, 'proteomics_up')
-    _run(exp.proteomics_over_time, exp.proteomics_time_points, 'proteomics_both')
+    pt = exp.proteomics_time_points
+    _run(exp.proteomics_down_over_time, pt, 'proteomics_down')
+    _run(exp.proteomics_up_over_time, pt, 'proteomics_up')
+    _run(exp.proteomics_over_time, pt, 'proteomics_both')
 
-    _run(exp.rna_down_over_time, exp.rna_down_over_time, 'rna_down')
-    _run(exp.rna_up_over_time, exp.rna_down_over_time, 'rna_up')
-    _run(exp.rna_over_time, exp.rna_down_over_time, 'rna_both')
+    rt = exp.rna_down_over_time
+    _run(exp.rna_down_over_time, rt, 'rna_down')
+    _run(exp.rna_up_over_time, rt, 'rna_up')
+    _run(exp.rna_over_time, rt, 'rna_both')
 
     print("Done with enrichment")
 
