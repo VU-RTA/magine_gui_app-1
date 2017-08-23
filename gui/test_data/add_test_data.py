@@ -46,13 +46,13 @@ def add_enrichment():
                     category=category,
                     **i)
                 m.save()
-            quit()
+
     pt = exp.proteomics_time_points
     _run(exp.proteomics_down_over_time, pt, 'proteomics_down')
     _run(exp.proteomics_up_over_time, pt, 'proteomics_up')
     _run(exp.proteomics_over_time, pt, 'proteomics_both')
 
-    rt = exp.rna_down_over_time
+    rt = exp.rna_time_points
     _run(exp.rna_down_over_time, rt, 'rna_down')
     _run(exp.rna_up_over_time, rt, 'rna_up')
     _run(exp.rna_over_time, rt, 'rna_both')
