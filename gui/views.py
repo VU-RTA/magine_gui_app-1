@@ -7,7 +7,9 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import get_template
-from gui.enrichment_functions.enrichr_helper import return_table, model_to_json, return_table_from_model
+from django.views import View
+from gui.enrichment_functions.enrichr_helper import return_table, \
+    model_to_json, return_table_from_model
 
 
 def index(request):
@@ -47,14 +49,11 @@ def project_enrichment(request, project_name):
 
     ex = EnrichmentOutput.objects.filter(project_name=project_name).values()
     data = model_to_json(ex)
-
-    # template = get_template('simple_table_view.html', using='jinja2')
     return render(request, 'simple_table_view.html', data)
 
 
-# FORMS
-def add_new_project(request):
-    if request.method == "POST":
+class NewProjectView(View):
+    def post(self, request):
         form = forms.ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
@@ -63,66 +62,63 @@ def add_new_project(request):
             post.published_date = timezone.now()
             post.save()
             return redirect('post_detail', pk=post.project_name)
-    else:
+        form = forms.ProjectForm()
+        return render(request, 'add_data.html', {'form': form})
+
+    def get(self, request):
         form = forms.ProjectForm()
         return render(request, 'add_data.html', {'form': form})
 
 
-def ontology_analysis_from_list(request):
-    if request.method == "GET":
+class EnrichmentResultsView(View):
+    def get(self, request):
         form = forms.ListOfSpeciesOntology(request.GET)
         if form.is_valid():
             genes = form.cleaned_data['list_of_species'].split(',')
-            names = []
-            for i in genes:
-                i = i.upper()
-                i = i.replace(' ', '')
-                names.append(i)
+            list_of_species = _check_species_list(genes)
             ont = form.cleaned_data['ontology']
-            data = return_table(genes, ont)
+            data = return_table(list_of_species, ont)
 
             template = get_template('simple_table_view.html', using='jinja2')
             return HttpResponse(template.render(data))
-    else:
-        form = forms.ListOfSpeciesOntology()
-    return render(request, 'form_ontology_from_list.html', {'form': form})
+        else:
+            form = forms.ListOfSpeciesOntology()
+            content = {'form': form}
+            return render(request, 'form_ontology_from_list.html', content)
 
 
-def view_enrichment_from_model(request):
-    if request.method == "GET":
+class ProjectEnrichmentView(View):
+    def get(self, request):
         form = forms.EnrichmentDatasetForm(request.GET)
         if form.is_valid():
             project_name = form.cleaned_data['project_name']
             category = form.cleaned_data['category']
             dbs = form.cleaned_data['dbs']
-            data = return_table_from_model(project_name, category,dbs)
+            data = return_table_from_model(project_name, category, dbs)
             template = get_template('simple_table_view.html', using='jinja2')
             return HttpResponse(template.render(data))
-    else:
-        form = forms.EnrichmentDatasetForm()
-    return render(request, 'form_ontology_from_list.html', {'form': form})
+        else:
+            form = forms.EnrichmentDatasetForm()
+            content = {'form': form}
+            return render(request, 'form_ontology_from_list.html', content)
 
 
-def generate_subgraph_from_list(request):
-    if request.method == "GET":
+class SubgraphView(View):
+    def get(self, request):
         form = forms.ListOfSpeciesFrom(request.GET)
         if form.is_valid():
-            post = form.cleaned_data['list_of_species'].split(',')
-            names = []
-            for i in post:
-                i = i.upper()
-                i = i.replace(' ', '')
-                names.append(i)
-
+            list_of_species = form.cleaned_data['list_of_species'].split(',')
+            names = _check_species_list(list_of_species)
             graph = create_subgraph(names)
             return _json_graph(graph)
-    else:
-        form = forms.ListOfSpeciesFrom()
-    return render(request, 'form_species_list.html', {'form': form})
+
+        else:
+            form = forms.ListOfSpeciesFrom()
+            return render(request, 'form_species_list.html', {'form': form})
 
 
-def generate_path_between_two(request):
-    if request.method == "GET":
+class ShortestPathView(View):
+    def get(self, request):
         form = forms.PathBetweenForm(request.GET)
         if form.is_valid():
             start = form.cleaned_data['start']
@@ -131,14 +127,16 @@ def generate_path_between_two(request):
             end = end.upper()
             bi_dir = form.cleaned_data['bi_dir']
             graph = path_between(start, end, bi_dir)
-            return  _json_graph(graph)
-    else:
-        form = forms.PathBetweenForm()
-    return render(request, 'form_species_to_species.html', {'form': form})
+            return _json_graph(graph)
+
+        else:
+            form = forms.PathBetweenForm()
+            content = {'form': form}
+            return render(request, 'form_species_to_species.html', content)
 
 
-def generate_neighbors(request):
-    if request.method == "GET":
+class NeighorsView(View):
+    def get(self, request):
         form = forms.NodeNeighborsForm(request.GET)
         if form.is_valid():
             node = form.cleaned_data['node']
@@ -149,9 +147,10 @@ def generate_neighbors(request):
             max_dist = int(form.cleaned_data['max_dist'])
             graph = neighbors(start, up_stream, down_stream, max_dist)
             return _json_graph(graph)
-    else:
-        form = forms.NodeNeighborsForm(initial={'max_dist': '1'})
-    return render(request, 'form_graph_neighbors.html', {'form': form})
+
+        else:
+            form = forms.NodeNeighborsForm(initial={'max_dist': '1'})
+            return render(request, 'form_graph_neighbors.html', {'form': form})
 
 
 def _json_graph(graph):
@@ -164,3 +163,12 @@ def _json_graph(graph):
     template = get_template('subgraph_view.html', using='jinja2')
 
     return HttpResponse(template.render(data))
+
+
+def _check_species_list(list_of_species):
+    names = []
+    for i in list_of_species:
+        i = i.upper()
+        i = i.replace(' ', '')
+        names.append(i)
+    return names
