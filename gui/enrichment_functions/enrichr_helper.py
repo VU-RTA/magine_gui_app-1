@@ -1,6 +1,7 @@
 from magine.ontology.enrichr import Enrichr
 import pandas as pd
 from gui.models import EnrichmentOutput
+
 e = Enrichr()
 
 range_number = 'column_number:{},' \
@@ -51,8 +52,9 @@ dict_of_templates = dict(GO_id=range_number,
                          db=chosen,
                          sample_id=chosen,
                          )
-cols = ['term_name', 'rank', 'p_value', 'z_score', 'combined_score',
-                'adj_p_value', 'genes', 'n_genes', 'sample_id', 'db']
+cols = ['term_name', 'combined_score', 'adj_p_value', 'rank',  'genes',
+        'n_genes', 'sample_id', 'db']
+
 
 def yadf_filter(table):
     n = 0
@@ -116,7 +118,6 @@ def _format_simple_table(data):
 
 
 def model_to_json(model):
-
     df = pd.DataFrame(list(model))
     if 'id' in df.columns:
         del df['id']
@@ -148,7 +149,6 @@ def return_table_from_model(project_name, category, dbs):
     df = df.filter(category=category)
     df = df.filter(db__in=dbs)
     df = pd.DataFrame(list(df.values()))[cols]
-    print(df)
     tmp_table = _format_simple_table(df)
     tmp_table['genes'] = tmp_table['genes'].str.split(',').str.join(', ')
     d = yadf_filter(tmp_table)
@@ -157,7 +157,6 @@ def return_table_from_model(project_name, category, dbs):
     template_vars = {"data": data}
     return template_vars
 
+
 if __name__ == '__main__':
     return_table(['BAX', 'BCL2', 'MCL1', 'CASP3', 'CASP8'])
-
-

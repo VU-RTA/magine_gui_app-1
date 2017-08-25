@@ -24,93 +24,24 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane" id="1">
-                    <table class="table table-condensed table-bordered table-striped volumes">
-                        <thead>
-                        <tr>
-                            <td><b>Experimental method</b></td>
-                            {% for t in time %}
-
-                                <td><b>{{ t }}</b></td>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item, new_list in all_measured.items() %}
-                            <tr>
-                                <th>{{ item }}</th>
-                                {% for key, value in new_list.items() %}
-                                    <td> {{ value }}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                    {% autoescape off %}
+                    {{ all_measured }}
+                    {% endautoescape %}
                 </div>
                 <div class="tab-pane" id="2">
-                    <table class="table table-condensed table-bordered table-striped volumes">
-                        <thead>
-                        <tr>
-                            <td><b>Experimental method</b></td>
-                            {% for t in time %}
-                                <td><b>{{ t }}</b></td>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item, new_list in uni_measured.items() %}
-                            <tr>
-                                <th>{{ item }}</th>
-                                {% for key, value in new_list.items() %}
-                                    <td> {{ value }}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                    {% autoescape off %}
+                    {{ uni_measured }}
+                    {% endautoescape %}
                 </div>
                 <div class="tab-pane" id="3">
-                    <table class="table table-condensed table-bordered table-striped volumes">
-                        <thead>
-                        <tr>
-                            <td><b>Experimental method</b></td>
-                            {% for t in time %}
-                                <td><b>{{ t }}</b></td>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item, new_list in sig_measured.items() %}
-                            <tr>
-                                <th>{{ item }}</th>
-                                {% for key, value in new_list.items() %}
-                                    <td> {{ value }}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                    {% autoescape off %}
+                    {{ sig_measured }}
+                    {% endautoescape %}
                 </div>
                 <div class="tab-pane" id="4">
-                    <table class="table table-condensed table-bordered table-striped volumes">
-                        <thead>
-                        <tr>
-                            <td><b>Experimental method</b></td>
-                            {% for t in time %}
-                                <td><b>{{ t }}</b></td>
-                            {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for item, new_list in sig_uni.items() %}
-                            <tr>
-                                <th>{{ item }}</th>
-                                {% for key, value in new_list.items() %}
-                                    <td> {{ value }}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                    {% autoescape off %}
+                    {{ sig_uni }}
+                    {% endautoescape %}
                 </div>
                 <script>
                     $(document).ready(function () {

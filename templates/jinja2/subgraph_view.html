@@ -39,13 +39,21 @@
 <div class="row">
     <div class="container-fluid">
 
-        <div class="dropdown">
+        <div class="dropdown nav navbar-nav">
             <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Layout options<span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 <li> <input type='button' id='HieButton' value='Hierarchical layout'> </li>
                 <li> <input type='button' id='DagreButton' value='Default layout'> </li>
                 <li> <input type='button' id='FlatButton' value='Compact layout (random)'> </li>
+            </ul>
+        </div>
+        <div class="dropdown nav navbar-nav">
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Color options<span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li> <input type='button' id='metabolites' value='Highlight metabolites'> </li>
+                <li> <input type='button' id='genes' value='Highlight genes/proteins'> </li>
             </ul>
         </div>
     </div>
@@ -91,6 +99,15 @@
                 selector: 'node[speciesType = \'compound\']',
                 css: {
                     'content': 'data(chemName)',
+                    'text-valign': 'center',
+                    'text-halign': 'center',
+                    'shape': 'rectangle'
+                }
+            },
+            {
+                selector: 'node[speciesType = \'gene\']',
+                css: {
+                    'content': 'data(id)',
                     'text-valign': 'center',
                     'text-halign': 'center',
                     'shape': 'rectangle'
@@ -152,7 +169,7 @@
         cy.layout(
             {
                 name: 'cose-bilkent',
-                avoidOverlapPadding: 80,
+                avoidOverlapPadding: 100,
                 animate: false,
                 avoidOverlap: true
             }
@@ -161,6 +178,38 @@
     });
 
 
+
+    var MetaboliteColor = document.getElementById('metabolites');
+    MetaboliteColor.addEventListener('click', function (){
+        cy.style()
+{#         .resetToDefault() // start a fresh default stylesheet#}
+        // and then define new styles
+        .selector('node[speciesType = \'compound\']')
+              .style('background-color', 'red')
+
+        // ...
+
+        .update() // update the elements in the graph with the new style
+        ;
+    });
+
+
+
+    cy.$(':selected').remove();
+    var GenesColor = document.getElementById('genes');
+    GenesColor.addEventListener('click', function (){
+        cy.style()
+{#                $(this).toggleClass("clicked");#}
+{#         .resetToDefault() // start a fresh default stylesheet#}
+        // and then define new styles
+        .selector('node[speciesType = \'gene\']')
+              .style('background-color', 'red')
+
+        // ...
+
+        .update() // update the elements in the graph with the new style
+        ;
+    });
 </script>
 </body>
 {% endblock %}

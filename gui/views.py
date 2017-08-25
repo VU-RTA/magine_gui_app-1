@@ -33,20 +33,18 @@ def project_details(request, project_name):
     time = json.loads(ex.time)
     uni_sig = json.loads(ex.sig_uni)
     sig = json.loads(ex.sig_measured)
+    t = get_template('table_stats.html', using='jinja2')
     content = {
         'data': ex,
-        'time': time,
-        'all_measured': meas,
-        'uni_measured': uni,
-        'sig_measured': sig,
-        'sig_uni': uni_sig,
+        'all_measured': t.render({"all_measured": meas, 'time': time}),
+        'uni_measured': t.render({"all_measured": uni, 'time': time}),
+        'sig_measured': t.render({"all_measured": sig, 'time': time}),
+        'sig_uni': t.render({"all_measured": uni_sig, 'time': time}),
     }
     return render(request, 'project_details.html', content)
 
 
 def project_enrichment(request, project_name):
-    print('pk', project_name)
-
     ex = EnrichmentOutput.objects.filter(project_name=project_name).values()
     data = model_to_json(ex)
     return render(request, 'simple_table_view.html', data)

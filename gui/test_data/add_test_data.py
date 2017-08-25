@@ -1,8 +1,5 @@
 import os
-import sys
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(path)
 from django.core.wsgi import get_wsgi_application
 get_wsgi_application()
 from gui.models import Data, EnrichmentOutput
@@ -17,8 +14,8 @@ def add_meth():
 
     new = Data.objects.create(project_name='methotrexate')
     new.set_exp_data(
-        os.path.join(os.path.dirname(__file__),
-                     'data.csv.gz')
+        os.path.join(os.path.dirname(__file__), 'data.csv.gz'),
+        set_time_point=True,
     )
     new.save()
     print(new.get_time_points())
@@ -61,5 +58,5 @@ def add_enrichment():
 
 
 if __name__ == '__main__':
-    # add_meth()
-    add_enrichment()
+    add_meth()
+    # add_enrichment()

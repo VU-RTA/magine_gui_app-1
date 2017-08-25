@@ -59,6 +59,6 @@ def get_all_tables(data):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('/home/pinojc/PycharmProjects/magine_gui_app/gui/test_data/norris_et_al_2017_cisplatin_data.csv.gz',
+    df = pd.read_csv(r'C:\Users\James Pino\PycharmProjects\magine_gui_app\gui\\test_data\data.csv.gz',
                      low_memory=False)
     print(get_significant_numbers(df,True, True))

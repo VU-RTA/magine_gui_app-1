@@ -25,9 +25,12 @@ class Data(models.Model):
     def publish(self):
         self.upload_date = timezone.now()
 
-    def set_exp_data(self, file):
+    def set_exp_data(self, file, set_time_point=False):
+
         data = pd.read_csv(file, low_memory=False)
-        self.time_points = ','.join(list(data['time'].astype(str).unique()))
+        if set_time_point:
+            data['time'] = data['time_points']
+        self.time_points = ','.join(list(data['time_points'].astype(str).unique()))
         self.modality = ','.join(list(data['data_type'].unique()))
         time, all_m, uni_m, sig_m, sig_uni = get_all_tables(data)
         self.time = json.dumps(time)
