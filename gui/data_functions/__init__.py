@@ -46,7 +46,7 @@ def get_significant_numbers(data, sig, unique):
         if not isinstance(i, str):
             i = float(i)
         times.append(i)
-    times = [str(i) for i in times]
+    times = sorted([str(i) for i in times])
     return times, new_dict
 
 
@@ -61,4 +61,5 @@ def get_all_tables(data):
 if __name__ == '__main__':
     df = pd.read_csv(r'C:\Users\James Pino\PycharmProjects\magine_gui_app\gui\\test_data\data.csv.gz',
                      low_memory=False)
+    df['time'] = df['time_points']
     print(get_significant_numbers(df,True, True))
