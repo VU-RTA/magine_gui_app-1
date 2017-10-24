@@ -47,20 +47,6 @@ class NodeNeighborsForm(forms.Form):
         fields = ('node', 'up_stream', 'down_stream', 'max_dist')
 
 
-class EnrichmentDatasetForm(forms.Form):
-
-    DBS = models.EnrichmentOutput.objects.all().values_list('db','db').distinct()
-    PROJECT = models.EnrichmentOutput.objects.all().values_list('project_name','project_name').distinct()
-    CAT = models.EnrichmentOutput.objects.all().values_list('category','category').distinct()
-
-    project_name = forms.CharField(widget=forms.Select(choices=PROJECT))
-    category = forms.CharField(widget=widg.Select(choices=CAT))
-    dbs = forms.MultipleChoiceField(widget=widg.CheckboxSelectMultiple,choices=DBS)
-
-    class Meta:
-        fields = ['project_name', 'category', 'dbs', ]
-
-
 class PathBetweenForm(forms.Form):
     start = forms.CharField(widget=widg.TextInput({'class': 'form-control'}))
     end = forms.CharField(widget=widg.TextInput({'class': 'form-control'}))
@@ -70,3 +56,17 @@ class PathBetweenForm(forms.Form):
 
     class Meta:
         fields = ('start', 'end', 'bi_dir')
+
+
+class EnrichmentDatasetForm(forms.Form):
+
+    DBS = models.EnrichmentOutput.objects.all().values_list('db','db').distinct()
+    PROJECT = models.EnrichmentOutput.objects.all().values_list('project_name', 'project_name').distinct()
+    CAT = models.EnrichmentOutput.objects.all().values_list('category','category').distinct()
+
+    project_name = forms.CharField(widget=forms.Select(choices=PROJECT))
+    category = forms.CharField(widget=widg.Select(choices=CAT))
+    dbs = forms.MultipleChoiceField(widget=widg.CheckboxSelectMultiple,choices=DBS)
+
+    class Meta:
+        fields = ['project_name', 'category', 'dbs', ]

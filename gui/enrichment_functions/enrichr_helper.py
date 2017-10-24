@@ -1,6 +1,6 @@
 from magine.ontology.enrichr import Enrichr
 import pandas as pd
-from gui.models import EnrichmentOutput
+
 
 e = Enrichr()
 
@@ -66,12 +66,11 @@ def yadf_filter(table):
         out_string += '{' + new_string + '},\n'
 
     for m, i in enumerate(table.columns):
-
+        if i not in dict_of_templates:
+            continue
         if isinstance(i, str):
             new_string = dict_of_templates[i].format(n + m)
             out_string += '{' + new_string + '},\n'
-            continue
-        elif i not in dict_of_templates:
             continue
         new_string = dict_of_templates[i[0]].format(n + m)
         out_string += '{' + new_string + '},\n'
@@ -114,6 +113,13 @@ def _format_simple_table(data):
             tmp_table[i] = tmp_table[i].astype(int)
             tmp_table[i] = tmp_table[i].apply('{:,d}'.format)
 
+    def _add_check(row):
+        i = row.name
+        out = '<input type="checkbox" id="checkbox{0}" > ' \
+              '<label for="checkbox{0}"></label>'.format(i)
+        return out
+
+    tmp_table['checkbox'] = tmp_table.apply(_add_check, axis=1)
     return tmp_table
 
 
@@ -133,18 +139,22 @@ def model_to_json(model):
     return template_vars
 
 
-def return_table(list_of_genes, ont):
-    df = e.run_set_of_dbs(list_of_genes, db=ont)
+def return_table(list_of_genes, ont='pathways'):
+    cols = ['term_name', 'combined_score', 'adj_p_value', 'rank',
+            'genes', 'n_genes', 'db']
+    df = e.run_set_of_dbs(list_of_genes, db=ont)[cols]
     tmp_table = _format_simple_table(df)
     tmp_table['genes'] = tmp_table['genes'].str.split(',').str.join(', ')
     d = yadf_filter(tmp_table)
     data = tmp_table.to_dict('split')
+
     data['filters'] = d
     template_vars = {"data": data}
     return template_vars
 
 
 def return_table_from_model(project_name, category, dbs):
+    from gui.models import EnrichmentOutput
     df = EnrichmentOutput.objects.all().filter(project_name=project_name)
     df = df.filter(category=category)
     df = df.filter(db__in=dbs)

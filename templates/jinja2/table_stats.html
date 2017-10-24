@@ -12,8 +12,8 @@
     {% for item, new_list in all_measured.items() %}
         <tr>
             <th>{{ item }}</th>
-            {% for key, value in new_list.items() %}
-                <td> {{ value }}</td>
+            {% for t in time %}
+                <td> {{ new_list[t] }}</td>
             {% endfor %}
         </tr>
     {% endfor %}

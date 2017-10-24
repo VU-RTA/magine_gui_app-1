@@ -29,7 +29,7 @@ def get_significant_numbers(data, sig, unique):
     t = t.replace('-', np.nan)
     t_dict = t.to_dict()
     new_dict = dict()
-    for time, i in t_dict.items():
+    for time, i in sorted(t_dict.items()):
         for key, value in i.items():
             if value not in (np.nan, 'Total Unique Across'):
                 if np.isfinite(value):

@@ -100,4 +100,31 @@ class EnrichmentOutput(models.Model):
     combined_score = models.FloatField(blank=True, default=0)
 
 
+class Gene(models.Model):
+    name = models.CharField(max_length=200, blank=True)
+    fold_change = models.IntegerField(blank=True, default=0)
+
+
+class GeneList(models.Model):
+    gene_list = models.ManyToManyField(Gene)
+    sample_id = models.CharField(max_length=200, blank=True)
+
+    def up_genes(self):
+
+        return [i[0] for i in
+                self.gene_list.filter(fold_change__gt=0).values_list('name')]
+
+    def down_genes(self):
+        return [i[0] for i in
+                self.gene_list.filter(fold_change__lt=0).values_list('name')]
+
+    class Meta:
+        ordering = ('sample_id',)
+
+
+class Project(models.Model):
+    project_name = models.CharField(max_length=200, blank=True, unique=True,
+                                    primary_key=True)
+
+    samples = models.ManyToManyField(GeneList)
 

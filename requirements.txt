@@ -4,7 +4,7 @@ django-picklefield
 django-import-export
 numpy
 pandas
-networkx
+networkx==1.9.1
 scipy
 xlrd
 matplotlib
