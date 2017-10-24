@@ -4,7 +4,6 @@ services:
     build: .
     volumes:
       - ./_state/:/magine_home/_state/
-    entrypoint: /entrypoint.sh
     environment:
       - UWSGI_PROCESSES=3
       - UWSGI_MASTER=1

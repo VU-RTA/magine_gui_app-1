@@ -9,6 +9,4 @@ ADD requirements.txt requirements-production.txt $MAGINE_HOME/
 ADD . $MAGINE_HOME
 RUN pip install -r requirements-production.txt
 ENV PYTHONPATH /magine_home/Magine:$PYTHONPATH
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 CMD ["uwsgi"]
