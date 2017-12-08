@@ -34,18 +34,35 @@ def neighbors_including_cross_interactions(node, up, down):
 def neighbors(node, up, down, max_dist=1):
 
     sg = subgraph_gen.neighbors(node, up, down, max_dist)
+    sg = _filter_edges(sg, 'complex')
+    print(sg.nodes())
     return from_networkx(sg)
 
 
 def path_between(source, end, bi_dir):
 
     new_g = subgraph_gen.shortest_paths_between_two_proteins(source, end,
+                                                             single_path=False,
                                                              bidirectional=bi_dir)
     return from_networkx(new_g)
 
 
+def _filter_edges(graph, edge_type):
+    to_remove = set()
+    for i, j, d in graph.edges(data=True):
+        # print(d.keys())
+        if edge_type in d['interactionType']:
+            to_remove.add((i, j))
+
+    graph.remove_edges_from(to_remove)
+    nodes = set(graph.nodes())
+    for i in nodes:
+        if graph.degree(i) == 0:
+            graph.remove_node(i)
+    return graph
+
 if __name__ == '__main__':
     # neighbors('BAX', True, False)
     # neighbors('BAX', False, True)
-    # neighbors('BAX', True, True)
-    create_subgraph('H2AFX,ATM,MRE11,RAD50,TP53BP1'.split(','))
+    neighbors('CEPBP', True, True)
+    # create_subgraph('H2AFX,ATM,MRE11,RAD50,TP53BP1'.split(','))

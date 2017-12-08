@@ -59,14 +59,26 @@ class PathBetweenForm(forms.Form):
 
 
 class EnrichmentDatasetForm(forms.Form):
+    project_name = forms.MultipleChoiceField(
+        widget=widg.CheckboxSelectMultiple,
+        choices=models.EnrichmentOutput.objects.all(
 
-    DBS = models.EnrichmentOutput.objects.all().values_list('db','db').distinct()
-    PROJECT = models.EnrichmentOutput.objects.all().values_list('project_name', 'project_name').distinct()
-    CAT = models.EnrichmentOutput.objects.all().values_list('category','category').distinct()
+        ).values_list('project_name', 'project_name').distinct()
+    )
 
-    project_name = forms.CharField(widget=forms.Select(choices=PROJECT))
-    category = forms.CharField(widget=widg.Select(choices=CAT))
-    dbs = forms.MultipleChoiceField(widget=widg.CheckboxSelectMultiple,choices=DBS)
+    category = forms.MultipleChoiceField(
+        widget=widg.CheckboxSelectMultiple,
+        choices=models.EnrichmentOutput.objects.all(
+        ).values_list('category', 'category').distinct()
+    )
+
+    dbs = forms.MultipleChoiceField(
+
+        widget=widg.CheckboxSelectMultiple,
+        choices=models.EnrichmentOutput.objects.all(
+
+        ).values_list('db','db').distinct()
+    )
 
     class Meta:
         fields = ['project_name', 'category', 'dbs', ]

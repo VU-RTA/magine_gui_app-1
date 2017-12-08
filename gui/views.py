@@ -15,6 +15,7 @@ from gui.enrichment_functions.enrichr_helper import return_table, \
 def index(request):
     projects = Data.objects.all()
     _data = {'projects': projects}
+    print(_data)
     return HttpResponse(
         get_template('welcome.html', using='jinja2').render(_data)
     )
@@ -71,6 +72,8 @@ class NewProjectView(View):
 class EnrichmentResultsView(View):
     def get(self, request):
         form = forms.ListOfSpeciesOntology(request.GET)
+        print(form)
+        print(form.as_table())
         if form.is_valid():
             genes = form.cleaned_data['list_of_species'].split(',')
             list_of_species = _check_species_list(genes)

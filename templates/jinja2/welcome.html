@@ -8,17 +8,22 @@
         </div>
         <div class="container-fluid">
             <div class="row content">
-                <div class="col-sm-3 sidenav">
+                <div class="col-sm-5 sidenav">
                 <ul class="list-group">
-                            <a href="{{ url('add') }}" class="top-menu"><span
-                                    class="glyphicon glyphicon-plus"></span> Add Project</a>
+                    <h2> <a href="{{url('filter')}}" target="_blank">
+                        View enrichment output
+                    </a>
+                    </h2>
+                        <br/>
+                    <a href="{{ url('add') }}" class="top-menu"> <span class="glyphicon glyphicon-plus"></span>
+                        Add Project
+                    </a>
+                    {% for project in projects %}
+                        <li class="list-group-item"> <a href="{{url('details', args=[project.project_name])}}"
+                                                        target="_blank">{{ project.project_name }}</a>
+                        </li>
 
-                            {% for project in projects %}
-
-                            <li class="list-group-item"> <a href="{{url('details', args=[project.project_name])}}"
-                                   target="_blank">{{ project.project_name }}</a> </li>
-
-                            {% endfor %}
+                    {% endfor %}
                 </ul>
 
                 </div>

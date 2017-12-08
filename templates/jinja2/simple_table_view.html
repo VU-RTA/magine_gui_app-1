@@ -74,7 +74,7 @@
             column.visible(!column.visible());
         });
 
-        $('.ckbox label').on('click', function () {
+        $('.checkbox').on('click', function () {
             $(this).parents('tr').toggleClass('selected');
         });
         {% for key in data.columns %}
@@ -114,7 +114,9 @@
             {% endautoescape %}
         ]);
         $('button').click( function() {
-        var data = table.$('.ckbox label').serialize();
+        var data = table.$('.checked').serialize();
+        var idxs = []; $('input[name=rowcheckbox]:checked').each(function() {idxs.push($(this).id);});
+        console.log(idxs);
         console.log(data);
         alert(
             "The following data would have been submitted to the server: \n\n"+

@@ -1,9 +1,19 @@
-from magine.ontology.enrichr import Enrichr
 import pandas as pd
-
+import os
+import sys
+from magine.ontology.enrichr import Enrichr
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
+path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+from django.core.wsgi import get_wsgi_application
+get_wsgi_application()
+from magine_gui_app.settings import BASE_DIR
+_dir = BASE_DIR
 
 e = Enrichr()
 
+
+## convert to dictionary, pass as json.
 range_number = 'column_number:{},' \
                'filter_type: "range_number"'
 
@@ -50,8 +60,11 @@ dict_of_templates = dict(GO_id=range_number,
                          compound=auto_complete,
                          compound_id=auto_complete,
                          db=chosen,
+                         category=chosen,
+                         project_name=chosen,
                          sample_id=chosen,
                          )
+
 cols = ['term_name', 'combined_score', 'adj_p_value', 'rank',  'genes',
         'n_genes', 'sample_id', 'db']
 
@@ -115,7 +128,7 @@ def _format_simple_table(data):
 
     def _add_check(row):
         i = row.name
-        out = '<input type="checkbox" id="checkbox{0}" > ' \
+        out = '<input type="checkbox" id="checkbox{0}" name="rowcheckbox"> ' \
               '<label for="checkbox{0}"></label>'.format(i)
         return out
 
@@ -130,7 +143,7 @@ def model_to_json(model):
     if 'project_name' in df.columns:
         del df['project_name']
     tmp_table = _format_simple_table(df)
-
+    cols.append('checkbox')
     tmp_table = tmp_table[cols]
     d = yadf_filter(tmp_table)
     data = tmp_table.to_dict('split')
@@ -155,10 +168,16 @@ def return_table(list_of_genes, ont='pathways'):
 
 def return_table_from_model(project_name, category, dbs):
     from gui.models import EnrichmentOutput
-    df = EnrichmentOutput.objects.all().filter(project_name=project_name)
-    df = df.filter(category=category)
+    cols = ['term_name', 'combined_score', 'adj_p_value', 'rank', 'genes',
+            'n_genes', 'sample_id', 'db', 'category']
+    if len(project_name) > 1:
+        cols.insert(0, 'project_name')
+
+    df = EnrichmentOutput.objects.all().filter(project_name__in=project_name)
+    df = df.filter(category__in=category)
     df = df.filter(db__in=dbs)
     df = pd.DataFrame(list(df.values()))[cols]
+    df = df[df['adj_p_value'] < 0.2]
     tmp_table = _format_simple_table(df)
     tmp_table['genes'] = tmp_table['genes'].str.split(',').str.join(', ')
     d = yadf_filter(tmp_table)
@@ -170,3 +189,4 @@ def return_table_from_model(project_name, category, dbs):
 
 if __name__ == '__main__':
     return_table(['BAX', 'BCL2', 'MCL1', 'CASP3', 'CASP8'])
+

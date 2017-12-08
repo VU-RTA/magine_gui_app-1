@@ -57,6 +57,14 @@
             </ul>
         </div>
     </div>
+    <div id="tools" class="panel panel-primary">
+            <div class="panel-heading">Tools</div>
+            <div class="panel-body">
+                <button id="fit" class="btn btn-success">Fit</button>
+                <button id="layout" class="btn btn-success">Layout</button>
+                <button id="filter" class="btn btn-success">Filter edge</button>
+            </div>
+    </div>
     <row>
         <div class="col-md-12 col-sm-12 col-lg-12">
 
@@ -176,8 +184,22 @@
         ).run();
 
     });
+    var filterEdge = document.getElementById('filter');
+    filterEdge.addEventListener('click', function () {
+        cy.edges().selector('edge[interactionType = \'expression\']').remove();
+    });
 
+    $("#fit").click(function() {
+        console.log('cy=', cy);
+        cy.fit();
+    });
 
+    $("#layout").click(function() {
+        console.log('cy=', cy);
+        cy.layout({
+            name: 'dagre'
+        });
+    });
 
     var MetaboliteColor = document.getElementById('metabolites');
     MetaboliteColor.addEventListener('click', function (){
