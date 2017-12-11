@@ -1,0 +1,18 @@
+{% extends "project_details.html" %}
+{% block title %}Enrichment{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-6">
+            <h1>Enrichment of project</h1>
+            <p>
+                Please provide at least 1 from each category below.
+            </p>
+            <form method="GET">
+                {{ form.as_p()|safe }}
+                <input type="submit" value="Submit"/>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

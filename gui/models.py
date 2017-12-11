@@ -66,12 +66,12 @@ class Measurement(models.Model):
     compound = models.CharField(max_length=200, blank=True)
     compound_id = models.CharField(max_length=200, blank=True)
     name = models.CharField(max_length=200, blank=True)
-    p_value_group_1_and_group_2 = models.FloatField()  # 'p_value_group_1_and_group_2'
-    treated_control_fold_change = models.FloatField()  # 'treated_control_fold_change'
-    significant_flag = models.BooleanField()  # 'significant_flag'
-    exp_method = models.CharField(max_length=200)  # 'data_type'
-    species_type = models.CharField(max_length=200)  # 'species_type'
-    sample_id = models.CharField(max_length=200)  # 'time'
+    p_value_group_1_and_group_2 = models.FloatField()
+    treated_control_fold_change = models.FloatField()
+    significant_flag = models.BooleanField()
+    exp_method = models.CharField(max_length=200)
+    species_type = models.CharField(max_length=200)
+    sample_id = models.CharField(max_length=200)
     data_type = models.CharField(max_length=100)
     project_name = models.CharField(max_length=200, blank=True)
 

@@ -1,26 +1,27 @@
 import pandas as pd
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
 import sys
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(path)
-from django.core.wsgi import get_wsgi_application
-get_wsgi_application()
-from gui.models import Data, EnrichmentOutput
 from magine.ontology.enrichr import Enrichr
 from magine.data.datatypes import ExperimentalData
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
 
+path = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(path)
+from django.core.wsgi import get_wsgi_application
+
+get_wsgi_application()
+from gui.models import Data, EnrichmentOutput
 from magine_gui_app.settings import BASE_DIR
+
 _dir = BASE_DIR
+e = Enrichr()
 
 
 def add_project(proj_name):
     print('saving {}'.format(proj_name))
-    there = Data.objects.all().filter(project_name=proj_name)
-    if len(there) > 0:
-        there.delete()
-
+    Data.objects.filter(project_name=proj_name).delete()
     new = Data.objects.create(project_name=proj_name)
     new.set_exp_data(
         os.path.join(os.path.dirname(__file__), '{}.csv.gz'.format(proj_name)),
@@ -32,20 +33,14 @@ def add_project(proj_name):
 
 
 def dump_project(proj_name):
-    there = EnrichmentOutput.objects.all().filter(project_name=proj_name)
-    df = pd.DataFrame(list(there.values()))
-    print(df.dtypes)
-    print(df['sample_id'].unique())
-    df = df[df['sample_id'].isin(['01hr', '24hr', '06hr', '48hr', '72hr', '96hr'])]
-    print(df['sample_id'].unique())
-    df.to_csv('{}_enrichment_dump.csv.gz'.format(proj_name), compression='gzip')
+    data = EnrichmentOutput.objects.filter(project_name=proj_name)
+    df = pd.DataFrame(list(data.values()))
+    df.to_csv('{}_enrichment_dump.csv.gz'.format(proj_name),
+              compression='gzip')
 
 
-def add_enrichment(project_name):
+def add_enrichment(project_name, reset_data=False):
 
-    already_there = set()
-    for i in EnrichmentOutput.objects.all():
-        already_there.add((str(i.db), str(i.category), str(i.sample_id).replace(' ', ''), project_name))
 
     all_dbs = [
 
@@ -67,7 +62,6 @@ def add_enrichment(project_name):
         'ChEA_2016',
         'TRANSFAC_and_JASPAR_PWMs',
         'ENCODE_TF_ChIP-seq_2015',
-
 
         # cell types
         'Jensen_TISSUES',
@@ -95,46 +89,44 @@ def add_enrichment(project_name):
         'Drug_Perturbations_from_GEO_2014',
 
     ]
-    e = Enrichr()
-    d = Data.objects.all()
-    data = d.filter(project_name=project_name)[0]
+
+    if reset_data:
+        EnrichmentOutput.objects.filter(project_name=project_name).delete()
+
+    data = Data.objects.filter(project_name=project_name)[0]
     exp = ExperimentalData(data.data)
+
+    already_there = set()
+    for i in EnrichmentOutput.objects.filter(project_name=project_name):
+        already_there.add("{}-{}-{}-{}".format(str(i.db), str(i.category),
+                                               str(i.sample_id), project_name))
 
     def _run(samples, timepoints, category):
         for genes, sample_id in zip(samples, timepoints):
-            print("On sample {} of {}".format(sample_id, timepoints))
             for i in all_dbs:
-                current = (str(i), str(category), str(sample_id), project_name)
+                current = "{}-{}-{}-{}".format(str(i), str(category),
+                                               str(sample_id), project_name)
                 if current in already_there:
                     continue
-                print(current)
 
                 name = os.path.join(_dir, 'test_data', 'CSVs',
                                     '_'.join(current) + '.csv.gz')
                 try:
                     df = pd.read_csv(name, index_col=None, encoding='utf-8')
                 except:
-                    print("Need to fix {}".format(name))
-                    # continue
                     df = e.run(genes, i)
-                    df.to_csv(name, index=False, encoding='utf-8', compression='gzip')
+                    df.to_csv(name, index=False, encoding='utf-8',
+                              compression='gzip')
                 df['db'] = i
                 df['sample_id'] = sample_id
                 df['category'] = category
                 df['project_name'] = project_name
                 dict_list = df.to_dict(orient='records')
-                # """
-                list_to_save = []
-                for row in dict_list:
-                    m = EnrichmentOutput(**row)
-                    list_to_save.append(m)
-
+                list_to_save = [EnrichmentOutput(**row) for row in dict_list]
                 EnrichmentOutput.objects.bulk_create(list_to_save)
-                # """
+
     pt = exp.proteomics_time_points
     rt = exp.rna_time_points
-    print(rt)
-    print(exp.rna_up_over_time)
     _run(exp.proteomics_over_time, pt, 'proteomics_both')
     _run(exp.proteomics_down_over_time, pt, 'proteomics_down')
     _run(exp.proteomics_up_over_time, pt, 'proteomics_up')
@@ -144,14 +136,18 @@ def add_enrichment(project_name):
     #
     print("Done with enrichment")
 
+    already_there = set()
+    for i in EnrichmentOutput.objects.filter(project_name=project_name):
+        already_there.add("{}-{}-{}-{}".format(str(i.db), str(i.category),
+                                               str(i.sample_id), project_name))
+    print(already_there)
+
 
 if __name__ == '__main__':
-    # add_meth()
-    # add_cisplatin()
     # dump_project('incyte_jak_atra')
     # add_project('incyte_jak_atra')
-    add_enrichment('incyte_jak_atra')
+    add_enrichment('incyte_jak_atra', reset_data=True)
     # add_enrichment('cisplatin')
-    #
-    # add_bend()
     # add_enrichment('bendamustine')
+    # add_enrichment('zinc225')
+

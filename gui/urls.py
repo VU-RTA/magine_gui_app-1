@@ -1,18 +1,17 @@
 from django.conf.urls import url, include
 from . import views
 
-
 network_urls = [
     url(r'^subgraph$', views.SubgraphView.as_view(), name='subgraph'),
     url(r'^path$', views.ShortestPathView.as_view(), name='path'),
-    url(r'^neighbors$', views.NeighorsView.as_view(), name='neighbors'),
+    url(r'^neighbors$', views.NeighborsView.as_view(), name='neighbors'),
     url(r'^network_stats$', views.network_stats, name='network_stats'),
 ]
 
-
 enrichment_urls = [
     url(r'^filter$', views.ProjectEnrichmentView.as_view(), name='filter'),
-    url(r'^enrichment$', views.EnrichmentResultsView.as_view(), name='enrichment'),
+    url(r'^enrichment$', views.EnrichmentResultsView.as_view(),
+        name='enrichment'),
 ]
 
 urlpatterns = [
@@ -25,8 +24,6 @@ urlpatterns = [
             url(r'^results$', views.project_enrichment, name='results'),
         ])
         ),
-
-
 
 ]
 urlpatterns += network_urls + enrichment_urls

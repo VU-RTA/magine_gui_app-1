@@ -18,6 +18,10 @@
 
 
     <style>
+        .myClass {
+            background: red;
+        }
+
         body {
             font: 14px helvetica neue, helvetica, arial, sans-serif;
         }
@@ -40,30 +44,33 @@
     <div class="container-fluid">
 
         <div class="dropdown nav navbar-nav">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Layout options<span class="caret"></span>
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Layout options<span
+                    class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li> <input type='button' id='HieButton' value='Hierarchical layout'> </li>
-                <li> <input type='button' id='DagreButton' value='Default layout'> </li>
-                <li> <input type='button' id='FlatButton' value='Compact layout (random)'> </li>
+                <li><input type='button' id='HieButton' value='Hierarchical layout'></li>
+                <li><input type='button' id='DagreButton' value='Default layout'></li>
+                <li><input type='button' id='FlatButton' value='Compact layout (random)'></li>
             </ul>
         </div>
         <div class="dropdown nav navbar-nav">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Color options<span class="caret"></span>
+            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Color options<span
+                    class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li> <input type='button' id='metabolites' value='Highlight metabolites'> </li>
-                <li> <input type='button' id='genes' value='Highlight genes/proteins'> </li>
+                <li><input type='button' id='metabolites' value='Highlight metabolites'></li>
+                <li><input type='button' id='genes' value='Highlight genes/proteins'></li>
             </ul>
         </div>
     </div>
     <div id="tools" class="panel panel-primary">
-            <div class="panel-heading">Tools</div>
-            <div class="panel-body">
-                <button id="fit" class="btn btn-success">Fit</button>
-                <button id="layout" class="btn btn-success">Layout</button>
-                <button id="filter" class="btn btn-success">Filter edge</button>
-            </div>
+        <div class="panel-heading">Filter edges</div>
+        <div class="panel-body">
+            <button id="filter_exp" class="btn btn-success">Expression</button>
+            <button id="filter_act" class="btn btn-success">Activate</button>
+            <button id="filter_chem" class="btn btn-success">Chemical</button>
+            <button id="filter_missing" class="btn btn-success">Missing interaction or indirect</button>
+        </div>
     </div>
     <row>
         <div class="col-md-12 col-sm-12 col-lg-12">
@@ -184,52 +191,115 @@
         ).run();
 
     });
-    var filterEdge = document.getElementById('filter');
-    filterEdge.addEventListener('click', function () {
-        cy.edges().selector('edge[interactionType = \'expression\']').remove();
+
+
+    {#function ToggleEdge (element, keyword){#}
+    {##}
+    {#    this.toggled = 'none';#}
+    {#    this.removed_nodes = 'nodes';#}
+    {#    this.filter_d = document.getElementById(element);#}
+    {#    this.keyword = keyword;#}
+    {#    var scope = this;#}
+    {#    this.filter_d.addEventListener('click', function(this.click.bind(this)){#}
+    {#        $(this).toggleClass('myClass');#}
+    {#        if(scope.toggled === 'none'){#}
+    {#            scope.toggled = cy.$('edge[interactionType *= \'here\']'.replace('here', scope.keyword)).remove();#}
+    {#            scope.removed_nodes = cy.$('node[[degree<1]]').remove();#}
+    {#        }#}
+    {#        else{#}
+    {#            scope.removed_nodes.restore();#}
+    {#            scope.toggled.restore();#}
+    {#            scope.toggled = 'none';#}
+    {#        }#}
+    {#    })#}
+
+
+    {#filter_missing = new ToggleEdge('filter_missing', 'missing');#}
+
+    var filter_exp = document.getElementById('filter_exp');
+    var removed_nodes = false;
+    var eles = 'none';
+    filter_exp.addEventListener('click', function () {
+        $(this).toggleClass('myClass');
+        if (eles === 'none') {
+            eles = cy.$('edge[interactionType *= \'expression\']').remove();
+            removed_nodes = cy.$('node[[degree<1]]').remove();
+        }
+        else {
+            removed_nodes.restore();
+            eles.restore();
+            eles = 'none';
+        }
     });
 
-    $("#fit").click(function() {
-        console.log('cy=', cy);
-        cy.fit();
+
+    var filter_act = document.getElementById('filter_act');
+    var removed_nodes_1 = false;
+    var eles_1 = 'none';
+    filter_act.addEventListener('click', function () {
+        $(this).toggleClass('myClass');
+        if (eles_1 === 'none') {
+            eles_1 = cy.$('edge[interactionType != \'deactivat\'][interactionType *= \'activat\']').remove();
+            removed_nodes_1 = cy.$('node[[degree<1]]').remove();
+        }
+        else {
+            removed_nodes_1.restore();
+            eles_1.restore();
+            eles_1 = 'none';
+        }
     });
 
-    $("#layout").click(function() {
-        console.log('cy=', cy);
-        cy.layout({
-            name: 'dagre'
-        });
+    var filter_chem = document.getElementById('filter_chem');
+    var removed_nodes_2 = false;
+    var eles_2 = 'none';
+    filter_chem.addEventListener('click', function () {
+        $(this).toggleClass('myClass');
+        if (eles_2 === 'none') {
+            eles_2 = cy.$('edge[interactionType *= \'chemical\']').remove();
+            removed_nodes_2 = cy.$('node[[degree<1]]').remove();
+        }
+        else {
+            removed_nodes_2.restore();
+            eles_2.restore();
+            eles_2 = 'none';
+        }
     });
+
+    var filter_missing = document.getElementById('filter_missing');
+    var removed_nodes_3 = false;
+    var eles_3 = 'none';
+    filter_missing.addEventListener('click', function () {
+        $(this).toggleClass('myClass');
+        if (eles_3 === 'none') {
+            eles_3 = cy.$('edge[interactionType *= \'missing\'], edge[interactionType *= \'indirect\']').remove();
+            removed_nodes_3 = cy.$('node[[degree<1]]').remove();
+        }
+        else {
+            removed_nodes_3.restore();
+            eles_3.restore();
+            eles_3 = 'none';
+        }
+    });
+
 
     var MetaboliteColor = document.getElementById('metabolites');
-    MetaboliteColor.addEventListener('click', function (){
+    MetaboliteColor.addEventListener('click', function () {
         cy.style()
-{#         .resetToDefault() // start a fresh default stylesheet#}
-        // and then define new styles
-        .selector('node[speciesType = \'compound\']')
-              .style('background-color', 'red')
+            .selector('node[speciesType = \'compound\']')
+            .style('background-color', 'red')
 
-        // ...
-
-        .update() // update the elements in the graph with the new style
+            .update()
         ;
     });
 
 
-
-    cy.$(':selected').remove();
     var GenesColor = document.getElementById('genes');
-    GenesColor.addEventListener('click', function (){
+    GenesColor.addEventListener('click', function () {
         cy.style()
-{#                $(this).toggleClass("clicked");#}
-{#         .resetToDefault() // start a fresh default stylesheet#}
-        // and then define new styles
-        .selector('node[speciesType = \'gene\']')
-              .style('background-color', 'red')
+            .selector('node[speciesType = \'gene\']')
+            .style('background-color', 'red')
 
-        // ...
-
-        .update() // update the elements in the graph with the new style
+            .update()
         ;
     });
 </script>
