@@ -35,7 +35,6 @@ def neighbors(node, up, down, max_dist=1):
 
     sg = subgraph_gen.neighbors(node, up, down, max_dist)
     sg = _filter_edges(sg, 'complex')
-    print(sg.nodes())
     return from_networkx(sg)
 
 

@@ -30,7 +30,7 @@ class Data(models.Model):
         if set_time_point:
             data['time'] = data['time_points']
         self.time_points = ','.join(
-            list(data['time_points'].astype(str).unique()))
+            sorted((data['time_points'].astype(str).unique())))
         self.modality = ','.join(list(data['data_type'].unique()))
         time, all_m, uni_m, sig_m, sig_uni = get_all_tables(data)
         self.time = json.dumps(time)

@@ -1,17 +1,8 @@
 import pandas as pd
 import os
-import sys
 from magine.ontology.enrichr import Enrichr
 from magine.data.datatypes import ExperimentalData
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
-
-path = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(path)
-from django.core.wsgi import get_wsgi_application
-
-get_wsgi_application()
+from magine.data.formatter import load_from_zip
 from gui.models import Data, EnrichmentOutput
 from magine_gui_app.settings import BASE_DIR
 
@@ -27,6 +18,19 @@ def add_project(proj_name):
         os.path.join(os.path.dirname(__file__), '{}.csv.gz'.format(proj_name)),
         set_time_point=True,
     )
+    new.save()
+    print('saved')
+
+
+def add_project_from_zip(proj_name, filename):
+    print('saving {}'.format(proj_name))
+    Data.objects.filter(project_name=proj_name).delete()
+    new = Data.objects.create(project_name=proj_name)
+    print(filename)
+    df = load_from_zip(filename)
+
+    new.set_exp_data(df, set_time_point=True)
+
     new.save()
     print('saved')
 
@@ -110,14 +114,7 @@ def add_enrichment(project_name, reset_data=False):
                 if current in already_there:
                     continue
 
-                name = os.path.join(_dir, 'test_data', 'CSVs',
-                                    current + '.csv.gz')
-                try:
-                    df = pd.read_csv(name, index_col=None, encoding='utf-8')
-                except:
-                    df = e.run(genes, i)
-                    df.to_csv(name, index=False, encoding='utf-8',
-                              compression='gzip')
+                df = e.run(genes, i)
                 df['db'] = i
                 df['sample_id'] = sample_id
                 df['category'] = category
@@ -139,19 +136,3 @@ def add_enrichment(project_name, reset_data=False):
         _run(exp.rna_over_time, rt, 'rna_both')
 
     print("Done with enrichment")
-
-
-if __name__ == '__main__':
-    # dump_project('incyte_jak_atra')
-    # add_project('incyte_jak_atra')
-    new_proj = ['tcdb_wt', 'tcdb_l1106k', 'tcdb_l1106k']
-    for i in new_proj:
-        add_project(i)
-        add_enrichment(i)
-
-    # add_project('jak_atra_only_label_free')
-    # add_enrichment('jak_atra_only_label_free')
-    # add_enrichment('cisplatin')
-    # add_enrichment('bendamustine')
-    # add_enrichment('zinc225')
-
