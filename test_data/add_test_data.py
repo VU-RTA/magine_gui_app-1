@@ -34,6 +34,8 @@ def add_project(proj_name):
 def dump_project(proj_name):
     data = EnrichmentOutput.objects.filter(project_name=proj_name)
     df = pd.DataFrame(list(data.values()))
+    print(df['sample_id'].unique())
+    print(df['category'].unique())
     df.to_csv('{}_enrichment_dump.csv.gz'.format(proj_name),
               compression='gzip')
 
@@ -125,6 +127,7 @@ def add_enrichment(project_name, reset_data=False):
                 dict_list = df.to_dict(orient='records')
                 list_to_save = [EnrichmentOutput(**row) for row in dict_list]
                 EnrichmentOutput.objects.bulk_create(list_to_save)
+                EnrichmentOutput.save()
 
     pt = exp.proteomics_time_points
     rt = exp.rna_time_points
@@ -133,6 +136,7 @@ def add_enrichment(project_name, reset_data=False):
         _run(exp.proteomics_over_time, pt, 'proteomics_both')
         _run(exp.proteomics_down_over_time, pt, 'proteomics_down')
         _run(exp.proteomics_up_over_time, pt, 'proteomics_up')
+
     if len(rt) != 0:
         _run(exp.rna_down_over_time, rt, 'rna_down')
         _run(exp.rna_up_over_time, rt, 'rna_up')
@@ -142,16 +146,11 @@ def add_enrichment(project_name, reset_data=False):
 
 
 if __name__ == '__main__':
-    # dump_project('incyte_jak_atra')
-    # add_project('incyte_jak_atra')
-    new_proj = ['tcdb_wt', 'tcdb_l1106k', 'tcdb_l1106k']
-    for i in new_proj:
-        add_project(i)
-        add_enrichment(i)
 
-    # add_project('jak_atra_only_label_free')
-    # add_enrichment('jak_atra_only_label_free')
-    # add_enrichment('cisplatin')
-    # add_enrichment('bendamustine')
-    # add_enrichment('zinc225')
+    new_proj = ['bendamustine']
+
+    for i in new_proj:
+        # add_project(i)
+        # add_enrichment(i)
+        dump_project(i)
 

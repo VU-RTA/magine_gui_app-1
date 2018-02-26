@@ -34,7 +34,7 @@ def neighbors_including_cross_interactions(node, up, down):
 def neighbors(node, up, down, max_dist=1):
 
     sg = subgraph_gen.neighbors(node, up, down, max_dist)
-    sg = _filter_edges(sg, 'complex')
+    # sg = _filter_edges(sg, 'complex')
     return from_networkx(sg)
 
 

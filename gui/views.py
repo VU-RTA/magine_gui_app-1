@@ -10,7 +10,7 @@ from django.template.loader import get_template
 from django.views import View
 from gui.enrichment_functions.enrichr_helper import return_table, \
     model_to_json, return_table_from_model
-
+from magine.html_templates.cy_stypes import styles
 
 def index(request):
     projects = Data.objects.all()
@@ -158,6 +158,7 @@ def _json_graph(graph):
     data = {
         'nodes': json.dumps(nodes),
         'edges': json.dumps(edges),
+        'style_json': styles['default']
     }
     template = get_template('subgraph_view.html', using='jinja2')
 

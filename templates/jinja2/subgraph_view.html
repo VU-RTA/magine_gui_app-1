@@ -53,255 +53,135 @@
                 <li><input type='button' id='FlatButton' value='Compact layout (random)'></li>
             </ul>
         </div>
-        <div class="dropdown nav navbar-nav">
-            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Color options<span
-                    class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><input type='button' id='metabolites' value='Highlight metabolites'></li>
-                <li><input type='button' id='genes' value='Highlight genes/proteins'></li>
-            </ul>
-        </div>
+
     </div>
     <div id="tools" class="panel panel-primary">
         <div class="panel-heading">Filter edges</div>
         <div class="panel-body">
+            <button id="filter_activate" class="btn btn-success">Activate</button>
+            <button id="filter_inhibit" class="btn btn-success">Inhibit</button>
             <button id="filter_exp" class="btn btn-success">Expression</button>
-            <button id="filter_act" class="btn btn-success">Activate</button>
-            <button id="filter_chem" class="btn btn-success">Chemical</button>
-            <button id="filter_missing" class="btn btn-success">Missing interaction or indirect</button>
+                <button id="filter_rep" class="btn btn-success">Repression</button>
+
+                <button id="filter_chem" class="btn btn-success">Chemical</button>
+                <button id="filter_missing" class="btn btn-success">Indirect</button>
+                <button id="filter_binding" class="btn btn-success">Binding</button>
+
         </div>
     </div>
-    <row>
-        <div class="col-md-12 col-sm-12 col-lg-12">
 
-            <!-- graph : start -->
-            <div class="panel panel-primary">
-                <div class="panel-heading">Graph</div>
-                <div class="panel-body">
-                    <div id="cy-container">
-                        <div id="cy"></div>
-                    </div>
+    <div class="col-md-12 col-sm-12 col-lg-12">
 
+        <!-- graph : start -->
+        <div class="panel panel-primary">
+            <div class="panel-heading">Graph</div>
+            <div class="panel-body">
+                <div id="cy-container">
+                    <div id="cy"></div>
                 </div>
+
             </div>
         </div>
-
-    </row>
+    </div>
 </div>
 
 <script>
 
     var cy = cytoscape({
-        container: document.getElementById('cy'),
-
-        {% autoescape off %}
-        elements: {
-            nodes:{{nodes}},
-            edges:{{edges}}
-        },
-        {% endautoescape %}
-        style: [
-            {
-                selector: 'node',
-                css: {
-                    'content': 'data(id)',
-                    'text-valign': 'center',
-                    'text-halign': 'center'
-                }
-            },
-            {
-                selector: 'node[speciesType = \'compound\']',
-                css: {
-                    'content': 'data(chemName)',
-                    'text-valign': 'center',
-                    'text-halign': 'center',
-                    'shape': 'rectangle'
-                }
-            },
-            {
-                selector: 'node[speciesType = \'gene\']',
-                css: {
-                    'content': 'data(id)',
-                    'text-valign': 'center',
-                    'text-halign': 'center',
-                    'shape': 'rectangle'
-                }
-            },
-            {
-                selector: '$node > node',
-                css: {
-                    'padding-top': '10px',
-                    'padding-left': '10px',
-                    'padding-bottom': '10px',
-                    'padding-right': '10px',
-                    'text-valign': 'top',
-                    'text-halign': 'center',
-                    'background-color': 'green'
-                }
-            },
-            {
-                selector: 'edge',
-                css: {
-                    'curve-style': 'bezier',
-                    'target-arrow-shape': 'triangle',
-
-                }
-            },
-            {
-                selector: 'edge:selected',
-                css: {
-                    'background-color': 'yellow',
-                    'line-color': 'red',
-                    'label': 'data(interactionType)',
-                    'target-arrow-color': 'black',
-                    'source-arrow-color': 'black'
-                }
+            container: document.getElementById("cy"),
+            wheelSensitivity:.25,
+            {% autoescape off %}
+            elements: {
+                nodes:{{nodes}},
+                edges:{{edges}}
             }
-        ]
-    });
+            {% endautoescape %}
 
-    cy.layout({
-            name: 'dagre',
-            avoidOverlap: true
-        }
-    ).run();
-    cy.resize();
-    cy.fit();
-
-    var HieButton = document.getElementById('HieButton');
-    HieButton.addEventListener('click', function () {
-        cy.layout({name: 'breadthfirst', avoidOverlap: true}).run();
-
-    });
-    var DagreButton = document.getElementById('DagreButton');
-    DagreButton.addEventListener('click', function () {
-        cy.layout({name: 'dagre', avoidOverlap: true}).run();
-
-    });
-    var FlatButton = document.getElementById('FlatButton');
-    FlatButton.addEventListener('click', function () {
+        });
         cy.layout(
             {
-                name: 'cose-bilkent',
-                avoidOverlapPadding: 100,
-                animate: false,
-                avoidOverlap: true
-            }
-        ).run();
+                name: 'dagre',
+                avoidOverlap: true,
+                rankSep:15,
+                padding:5,
+                fit:true
+            }).run();
+        cy.resize();
+        cy.fit();
+        cy.style().fromJson(
+            {% autoescape off %}
+            {{style_json}}
+            {% endautoescape %}
+        ).update();
 
-    });
+        var HieButton = document.getElementById('HieButton');
+        HieButton.addEventListener('click', function () {
+            cy.layout({name: 'breadthfirst', avoidOverlap: true}).run();
+
+        });
+        var DagreButton = document.getElementById('DagreButton');
+        DagreButton.addEventListener('click', function () {
+            cy.layout(
+                {
+                    name: 'dagre',
+                    avoidOverlap: true,
+                    rankSep:15,
+                    padding:5,
+                    fit:true
+                }
+            ).run();
+            cy.resize();
+                cy.fit();
+
+        });
+        var FlatButton = document.getElementById('FlatButton');
+        FlatButton.addEventListener('click', function () {
+            cy.layout(
+                {
+                    name: 'cose-bilkent',
+                    avoidOverlapPadding: 100,
+                    animate: false,
+                    avoidOverlap: true
+                }
+            ).run();
+            cy.resize();
+                cy.fit();
+        });
 
 
-    {#function ToggleEdge (element, keyword){#}
-    {##}
-    {#    this.toggled = 'none';#}
-    {#    this.removed_nodes = 'nodes';#}
-    {#    this.filter_d = document.getElementById(element);#}
-    {#    this.keyword = keyword;#}
-    {#    var scope = this;#}
-    {#    this.filter_d.addEventListener('click', function(this.click.bind(this)){#}
-    {#        $(this).toggleClass('myClass');#}
-    {#        if(scope.toggled === 'none'){#}
-    {#            scope.toggled = cy.$('edge[interactionType *= \'here\']'.replace('here', scope.keyword)).remove();#}
-    {#            scope.removed_nodes = cy.$('node[[degree<1]]').remove();#}
-    {#        }#}
-    {#        else{#}
-    {#            scope.removed_nodes.restore();#}
-    {#            scope.toggled.restore();#}
-    {#            scope.toggled = 'none';#}
-    {#        }#}
-    {#    })#}
-
-
-    {#filter_missing = new ToggleEdge('filter_missing', 'missing');#}
-
-    var filter_exp = document.getElementById('filter_exp');
-    var removed_nodes = false;
-    var eles = 'none';
-    filter_exp.addEventListener('click', function () {
-        $(this).toggleClass('myClass');
-        if (eles === 'none') {
-            eles = cy.$('edge[interactionType *= \'expression\']').remove();
-            removed_nodes = cy.$('node[[degree<1]]').remove();
+        function createNewFilter(name, criteria) {
+            var obj = {};
+            obj.removed_nodes = false;
+            obj.eles = 'none';
+            obj.criteria = criteria;
+            obj.button = document.getElementById(name);
+            obj.button.addEventListener('click', function () {
+                $(this).toggleClass('myClass');
+                if (obj.eles === 'none') {
+                    obj.eles = cy.$(obj.criteria).remove();
+                    obj.removed_nodes = cy.$('node[[degree<1]]').remove();
+                }
+                else {
+                    obj.removed_nodes.restore();
+                    obj.eles.restore();
+                    obj.eles = 'none';
+                }
+                {#cy.layout({name: 'dagre', avoidOverlap: true}).run();#}
+                cy.resize();
+                cy.fit();
+            });
         }
-        else {
-            removed_nodes.restore();
-            eles.restore();
-            eles = 'none';
-        }
-    });
+
+        createNewFilter('filter_exp', 'edge[interactionType *= \'expression\']');
+        createNewFilter('filter_rep', 'edge[interactionType *= \'repression\']');
+        createNewFilter('filter_chem', 'edge[interactionType *= \'chemical\']');
+        createNewFilter('filter_missing', 'edge[interactionType *= \'indirect\']');
+        createNewFilter('filter_binding', 'edge[interactionType *= \'binding\']');
+        createNewFilter('filter_inhibit', 'edge[interactionType *= \'inhibit\']');
+        createNewFilter('filter_activate', 'edge[interactionType *= \'activate\']');
 
 
-    var filter_act = document.getElementById('filter_act');
-    var removed_nodes_1 = false;
-    var eles_1 = 'none';
-    filter_act.addEventListener('click', function () {
-        $(this).toggleClass('myClass');
-        if (eles_1 === 'none') {
-            eles_1 = cy.$('edge[interactionType != \'deactivat\'][interactionType *= \'activat\']').remove();
-            removed_nodes_1 = cy.$('node[[degree<1]]').remove();
-        }
-        else {
-            removed_nodes_1.restore();
-            eles_1.restore();
-            eles_1 = 'none';
-        }
-    });
 
-    var filter_chem = document.getElementById('filter_chem');
-    var removed_nodes_2 = false;
-    var eles_2 = 'none';
-    filter_chem.addEventListener('click', function () {
-        $(this).toggleClass('myClass');
-        if (eles_2 === 'none') {
-            eles_2 = cy.$('edge[interactionType *= \'chemical\']').remove();
-            removed_nodes_2 = cy.$('node[[degree<1]]').remove();
-        }
-        else {
-            removed_nodes_2.restore();
-            eles_2.restore();
-            eles_2 = 'none';
-        }
-    });
-
-    var filter_missing = document.getElementById('filter_missing');
-    var removed_nodes_3 = false;
-    var eles_3 = 'none';
-    filter_missing.addEventListener('click', function () {
-        $(this).toggleClass('myClass');
-        if (eles_3 === 'none') {
-            eles_3 = cy.$('edge[interactionType *= \'missing\'], edge[interactionType *= \'indirect\']').remove();
-            removed_nodes_3 = cy.$('node[[degree<1]]').remove();
-        }
-        else {
-            removed_nodes_3.restore();
-            eles_3.restore();
-            eles_3 = 'none';
-        }
-    });
-
-
-    var MetaboliteColor = document.getElementById('metabolites');
-    MetaboliteColor.addEventListener('click', function () {
-        cy.style()
-            .selector('node[speciesType = \'compound\']')
-            .style('background-color', 'red')
-
-            .update()
-        ;
-    });
-
-
-    var GenesColor = document.getElementById('genes');
-    GenesColor.addEventListener('click', function () {
-        cy.style()
-            .selector('node[speciesType = \'gene\']')
-            .style('background-color', 'red')
-
-            .update()
-        ;
-    });
 </script>
 </body>
 {% endblock %}
