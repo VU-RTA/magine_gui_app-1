@@ -13,4 +13,3 @@ pathos
 appdirs
 plotly
 jupyter
-python-igraph

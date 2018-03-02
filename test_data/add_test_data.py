@@ -9,9 +9,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
 path = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(path)
-from django.core.wsgi import get_wsgi_application
 
+from django.core.wsgi import get_wsgi_application
 get_wsgi_application()
+
 from gui.models import Data, EnrichmentOutput
 from magine_gui_app.settings import BASE_DIR
 
@@ -20,7 +21,7 @@ e = Enrichr()
 
 
 def add_project(proj_name):
-    print('saving {}'.format(proj_name))
+    print('Adding project data\n\t{}'.format(proj_name))
     Data.objects.filter(project_name=proj_name).delete()
     new = Data.objects.create(project_name=proj_name)
     new.set_exp_data(
@@ -28,7 +29,7 @@ def add_project(proj_name):
         set_time_point=True,
     )
     new.save()
-    print('saved')
+    print('Done adding project data')
 
 
 def dump_project(proj_name):
@@ -65,23 +66,23 @@ def add_enrichment(project_name, reset_data=False):
         'ENCODE_TF_ChIP-seq_2015',
 
         # cell types
-        'Jensen_TISSUES',
-        'Human_Gene_Atlas',
-        'Tissue_Protein_Expression_from_ProteomicsDB',
-        'ARCHS4_Cell-lines',
-        'ARCHS4_Tissues',
-        'Cancer_Cell_Line_Encyclopedia',
-        'NCI-60_Cancer_Cell_Lines',
+        # 'Jensen_TISSUES',
+        # 'Human_Gene_Atlas',
+        # 'Tissue_Protein_Expression_from_ProteomicsDB',
+        # 'ARCHS4_Cell-lines',
+        # 'ARCHS4_Tissues',
+        # 'Cancer_Cell_Line_Encyclopedia',
+        # 'NCI-60_Cancer_Cell_Lines',
 
         # pertubations
-        'Kinase_Perturbations_from_GEO_down',
-        'Kinase_Perturbations_from_GEO_up',
-        'LINCS_L1000_Kinase_Perturbations_down',
-        'LINCS_L1000_Kinase_Perturbations_up',
-        'Ligand_Perturbations_from_GEO_down',
-        'Ligand_Perturbations_from_GEO_up',
-        'Old_CMAP_down',
-        'Old_CMAP_up',
+        # 'Kinase_Perturbations_from_GEO_down',
+        # 'Kinase_Perturbations_from_GEO_up',
+        # 'LINCS_L1000_Kinase_Perturbations_down',
+        # 'LINCS_L1000_Kinase_Perturbations_up',
+        # 'Ligand_Perturbations_from_GEO_down',
+        # 'Ligand_Perturbations_from_GEO_up',
+        # 'Old_CMAP_down',
+        # 'Old_CMAP_up',
 
         # phenotypes
         'Human_Phenotype_Ontology',
@@ -101,25 +102,29 @@ def add_enrichment(project_name, reset_data=False):
 
     already_there = set()
     for i in EnrichmentOutput.objects.filter(project_name=project_name):
-        already_there.add("{}-{}-{}-{}".format(str(i.db), str(i.category),
-                                               str(i.sample_id), project_name))
+        already_there.add("_".join(
+            [i.db, i.category, i.sample_id, project_name])
+        )
+
+    print('Running enrichment for project \n\t{}'.format(project_name))
+    o_d = os.path.join(_dir, 'test_data', 'CSVs')
+    if not os.path.exists(o_d):
+        os.mkdir(o_d)
 
     def _run(samples, timepoints, category):
         for genes, sample_id in zip(samples, timepoints):
             for i in all_dbs:
-                current = "{}-{}-{}-{}".format(str(i), str(category),
-                                               str(sample_id), project_name)
+                current = "_".join([i, category, sample_id, project_name])
                 if current in already_there:
                     continue
-
-                name = os.path.join(_dir, 'test_data', 'CSVs',
-                                    current + '.csv.gz')
-                try:
-                    df = pd.read_csv(name, index_col=None, encoding='utf-8')
-                except:
-                    df = e.run(genes, i)
-                    df.to_csv(name, index=False, encoding='utf-8',
-                              compression='gzip')
+                df = e.run(genes, i)
+                # name = os.path.join(o_d, current + '.csv.gz')
+                # try:
+                #     df = pd.read_csv(name, index_col=None, encoding='utf-8')
+                # except:
+                #     df = e.run(genes, i)
+                #     df.to_csv(name, index=False, encoding='utf-8',
+                #               compression='gzip')
                 df['db'] = i
                 df['sample_id'] = sample_id
                 df['category'] = category
@@ -127,7 +132,6 @@ def add_enrichment(project_name, reset_data=False):
                 dict_list = df.to_dict(orient='records')
                 list_to_save = [EnrichmentOutput(**row) for row in dict_list]
                 EnrichmentOutput.objects.bulk_create(list_to_save)
-                EnrichmentOutput.save()
 
     pt = exp.proteomics_time_points
     rt = exp.rna_time_points
@@ -147,10 +151,10 @@ def add_enrichment(project_name, reset_data=False):
 
 if __name__ == '__main__':
 
-    new_proj = ['bendamustine']
+    new_proj = ['jak_atra', 'jak_only', 'atra_only']
 
     for i in new_proj:
-        # add_project(i)
-        # add_enrichment(i)
-        dump_project(i)
+        add_project(i)
+        add_enrichment(i)
+        # dump_project(i)
 

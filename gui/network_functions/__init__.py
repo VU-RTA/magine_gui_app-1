@@ -2,6 +2,8 @@ import networkx as nx
 from gui.network_functions.networkx_tools import from_networkx
 import os
 from magine.networks.network_subgraphs import NetworkSubgraphs
+from magine.networks.utils import nx_to_json
+from magine.html_templates.cy_stypes import styles
 
 
 _g_path = os.path.join(os.path.dirname(__file__),
@@ -14,9 +16,8 @@ subgraph_gen = NetworkSubgraphs(g)
 
 
 def create_subgraph(list_of_species):
-
-    new_g = subgraph_gen.shortest_paths_between_lists(list_of_species)
-    return from_networkx(new_g)
+    sg = subgraph_gen.shortest_paths_between_lists(list_of_species)
+    return prep_g(sg)
 
 
 def neighbors_including_cross_interactions(node, up, down):
@@ -28,14 +29,15 @@ def neighbors_including_cross_interactions(node, up, down):
         species += g.successors(node)
 
     sg = g.subgraph(species)
-    return from_networkx(sg)
+
+    return prep_g(sg)
 
 
 def neighbors(node, up, down, max_dist=1):
 
     sg = subgraph_gen.neighbors(node, up, down, max_dist)
-    # sg = _filter_edges(sg, 'complex')
-    return from_networkx(sg)
+
+    return prep_g(sg)
 
 
 def path_between(source, end, bi_dir):
@@ -43,7 +45,7 @@ def path_between(source, end, bi_dir):
     new_g = subgraph_gen.shortest_paths_between_two_proteins(source, end,
                                                              single_path=False,
                                                              bidirectional=bi_dir)
-    return from_networkx(new_g)
+    return prep_g(sg)
 
 
 def _filter_edges(graph, edge_type):
@@ -59,6 +61,23 @@ def _filter_edges(graph, edge_type):
         if graph.degree(i) == 0:
             graph.remove_node(i)
     return graph
+
+
+def _get_edge_types(graph):
+    edge_types = set()
+    for i, j, d in graph.edges(data=True):
+        if 'interactionType' in d:
+            for e in d['interactionType'].split('|'):
+                edge_types.add(e)
+    return edge_types
+
+
+def prep_g(sg):
+    data = nx_to_json(sg)
+    data['edge_list'] = _get_edge_types(sg)
+    data['style_json'] = styles['default']
+    return data
+
 
 if __name__ == '__main__':
     # neighbors('BAX', True, False)

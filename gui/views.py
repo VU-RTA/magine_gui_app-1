@@ -10,7 +10,8 @@ from django.template.loader import get_template
 from django.views import View
 from gui.enrichment_functions.enrichr_helper import return_table, \
     model_to_json, return_table_from_model
-from magine.html_templates.cy_stypes import styles
+
+
 
 def index(request):
     projects = Data.objects.all()
@@ -109,7 +110,8 @@ class SubgraphView(View):
             list_of_species = form.cleaned_data['list_of_species'].split(',')
             names = _check_species_list(list_of_species)
             graph = create_subgraph(names)
-            return _json_graph(graph)
+            return HttpResponse(get_template('subgraph_view.html', using='jinja2').render(graph))
+
 
         else:
             form = forms.ListOfSpeciesFrom()
@@ -126,7 +128,9 @@ class ShortestPathView(View):
             end = end.upper()
             bi_dir = form.cleaned_data['bi_dir']
             graph = path_between(start, end, bi_dir)
-            return _json_graph(graph)
+            return HttpResponse(
+                get_template('subgraph_view.html', using='jinja2').render(
+                    graph))
 
         else:
             form = forms.PathBetweenForm()
@@ -145,24 +149,13 @@ class NeighborsView(View):
             down_stream = form.cleaned_data['down_stream']
             max_dist = int(form.cleaned_data['max_dist'])
             graph = neighbors(start, up_stream, down_stream, max_dist)
-            return _json_graph(graph)
+            return HttpResponse(
+                get_template('subgraph_view.html', using='jinja2').render(
+                    graph))
 
         else:
             form = forms.NodeNeighborsForm(initial={'max_dist': '1'})
             return render(request, 'form_graph_neighbors.html', {'form': form})
-
-
-def _json_graph(graph):
-    nodes = graph['elements']['nodes']
-    edges = graph['elements']['edges']
-    data = {
-        'nodes': json.dumps(nodes),
-        'edges': json.dumps(edges),
-        'style_json': styles['default']
-    }
-    template = get_template('subgraph_view.html', using='jinja2')
-
-    return HttpResponse(template.render(data))
 
 
 def _check_species_list(list_of_species):
@@ -172,3 +165,5 @@ def _check_species_list(list_of_species):
         i = i.replace(' ', '')
         names.append(i)
     return names
+
+

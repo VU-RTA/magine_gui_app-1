@@ -1,11 +1,12 @@
+import json
+import os
 from django.db import models
 from django.utils import timezone
 from gui.data_functions import get_all_tables
 import pandas as pd
 from picklefield.fields import PickledObjectField
-import json
 from magine_gui_app.settings import BASE_DIR
-import os
+
 
 data_dir = os.path.join(BASE_DIR, '_state')
 
@@ -54,6 +55,25 @@ class Data(models.Model):
         return self.project_name
 
 
+class EnrichmentOutput(models.Model):
+    project_name = models.CharField(max_length=200, blank=True)
+    category = models.CharField(max_length=200, blank=True)
+    db = models.CharField(max_length=200, blank=True)
+
+    term_name = models.CharField(max_length=20000, blank=True)
+    term_id = models.CharField(max_length=20000, blank=True)
+    sample_id = models.CharField(max_length=20000, blank=True)
+    genes = models.CharField(max_length=20000, blank=True)
+
+    n_genes = models.IntegerField(blank=True, default=0)
+    rank = models.IntegerField(blank=True, default=0)
+
+    z_score = models.FloatField(blank=True, default=0)
+    p_value = models.FloatField(blank=True, default=0)
+    adj_p_value = models.FloatField(blank=True, default=0)
+    combined_score = models.FloatField(blank=True, default=0)
+
+
 class Measurement(models.Model):
     DATA_TYPE = (
         'metabolite',
@@ -79,25 +99,6 @@ class Measurement(models.Model):
 class Dataset(models.Model):
     project_name = models.CharField(max_length=200)
     measurements = models.ManyToManyField(Measurement)
-
-
-class EnrichmentOutput(models.Model):
-    project_name = models.CharField(max_length=200, blank=True)
-    category = models.CharField(max_length=200, blank=True)
-    db = models.CharField(max_length=200, blank=True)
-
-    term_name = models.CharField(max_length=20000, blank=True)
-    term_id = models.CharField(max_length=20000, blank=True)
-    sample_id = models.CharField(max_length=20000, blank=True)
-    genes = models.CharField(max_length=20000, blank=True)
-
-    n_genes = models.IntegerField(blank=True, default=0)
-    rank = models.IntegerField(blank=True, default=0)
-
-    z_score = models.FloatField(blank=True, default=0)
-    p_value = models.FloatField(blank=True, default=0)
-    adj_p_value = models.FloatField(blank=True, default=0)
-    combined_score = models.FloatField(blank=True, default=0)
 
 
 class Gene(models.Model):

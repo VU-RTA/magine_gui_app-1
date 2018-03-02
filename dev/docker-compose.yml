@@ -2,8 +2,8 @@ version: '3'
 services:
   magine:
     build: .
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./_state/:/magine_home/_state/
-    entrypoint: /entrypoint.sh
     ports:
       - "8000:8000"
