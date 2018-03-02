@@ -23,7 +23,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.1/jquery.dataTables.yadcf.js"></script>
-
+    <title>Table View</title>
     <style>
         .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
             color: blue !important;
@@ -54,76 +54,94 @@
     {% endfor %}
 </div>
 <br/>
+<table id="table" class="table table-striped table-condensed " cellspacing="0" cellpadding="1">
+</table>
 
-<table id="table" class="table table-striped table-condensed " cellspacing="0" cellpadding="1"></table>
 
-<br/>
-<button type="submit">Submit form</button>
+<p>
+    <button onclick="makeSubgraph()" class="btn btn-success">Subgraphs</button>
+</p>
+
+
 <script>
     {% autoescape off %}
-    var json_data = {{ data.data }};
+    var json_data = {{ data.data|safe}};
     {% endautoescape %}
+    {#
+        $(document).ready(function () {
+            $('a.toggle-vis').on('click', function (e) {
+                e.preventDefault();
+                $(this).toggleClass("clicked");
+                // Get the column API object
+                var column = table.column($(this).attr('data-column'));
+                // Toggle the visibility
+                column.visible(!column.visible());
+            });
 
-    $(document).ready(function () {
-        $('a.toggle-vis').on('click', function (e) {
-            e.preventDefault();
-            $(this).toggleClass("clicked");
-            // Get the column API object
-            var column = table.column($(this).attr('data-column'));
-            // Toggle the visibility
-            column.visible(!column.visible());
         });
-
-        $('.checkbox').on('click', function () {
-            $(this).parents('tr').toggleClass('selected');
-        });
-        {% for key in data.columns %}
-            {% if key =='genes' %}
-                var genesIndex = {{ loop.index - 1 }};
-            {% endif %}
-        {% endfor %}
-        var table = $('table').DataTable({
-            "data": json_data,
-            "autoWidth": false,
-
-            columns: [
-                {% for key in data.columns %}
-                    {% if key =='genes' %}
-                        {title: "{{ key }}<br/>", width: "50px"},
-                    {% elif key =='term_name' %}
-                        {title: "{{ key }}<br/>", width: "50px"},
-                    {% elif key =='db' %}
-                        {title: "{{ key }}<br/>", width: "50px"},
-                    {% else %}
-                        {title: "{{ key }}<br/>", width: "10px"},
-                    {% endif %}
-
-                    {#                {title: "{{ key }}"},#}
-                {% endfor %}
-            ],
-{#        "columnDefs": [ {#}
-{#            "targets": 0,#}
-{#            "data": null,#}
-{#            "defaultContent": "<button>Click!</button>"#}
-{#        } ]#}
-        });
-
-        yadcf.init(table, [
-            {% autoescape off %}
-            {{data.filters}}
-            {% endautoescape %}
-        ]);
-        $('button').click( function() {
-        var data = table.$('.checked').serialize();
-        var idxs = []; $('input[name=rowcheckbox]:checked').each(function() {idxs.push($(this).id);});
-        console.log(idxs);
-        console.log(data);
-        alert(
-            "The following data would have been submitted to the server: \n\n"+
-            data[genesIndex]
-        );
-        return false;
-    } );
+        #}
+    $('a.toggle-vis').on('click', function (e) {
+        e.preventDefault();
+        $(this).toggleClass("clicked");
+        // Get the column API object
+        var column = tbl.column($(this).attr('data-column'));
+        // Toggle the visibility
+        column.visible(!column.visible());
     });
+    var tbl = $('table').DataTable({
+        "data": json_data,
+        "autoWidth": false,
+        columns: [
+            {% for key in data.columns %}
+                {% if key =='genes' %}
+                    {title: "{{ key }}<br/>", width: "50px"},
+                {% elif key =='term_name' %}
+                    {title: "{{ key }}<br/>", width: "50px"},
+                {% elif key =='db' %}
+                    {title: "{{ key }}<br/>", width: "50px"},
+                {% else %}
+                    {title: "{{ key }}<br/>", width: "10px"},
+                {% endif %}
+
+                {#                {title: "{{ key }}"},#}
+            {% endfor %}
+        ]
+
+
+    });
+
+    yadcf.init(tbl, {% autoescape off %} {{data.filters|safe }} {% endautoescape %});
+
+    function getSelected() {
+        var selected = [];
+        $('#table input:checked').each(function () {
+            selected.push($(this).attr('name'));
+        });
+        return selected;
+
+    }
+
+    function makeSubgraph() {
+        var rows = getSelected();
+        $.ajax({
+            url: "{{ url('subgraph') }}",
+            {#type: 'POST',#}
+            type: 'GET',
+
+            data: {
+                list_of_species: 'BAX,BCL2',
+
+            },
+            success: function (data) {
+                alert(data);
+                var newWindow = window.open("", "_blank");
+                newWindow.document.write(data);
+            },
+            error: function (xhr, status) {
+                alert(status);
+            },
+        });
+
+    }
 </script>
 {% endblock %}

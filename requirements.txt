@@ -12,3 +12,5 @@ bioservices
 pathos
 appdirs
 plotly
+jupyter
+python-igraph
