@@ -41,6 +41,26 @@ def dump_project(proj_name):
               compression='gzip')
 
 
+def load_project(proj_name):
+
+    df = pd.read_csv('{}_enrichment_dump.csv.gz'.format(proj_name),
+                     index_col=0)
+
+    already_there = set()
+    for i in EnrichmentOutput.objects.filter(project_name=proj_name):
+        already_there.add("_".join(
+            [i.db, i.category, i.sample_id, proj_name])
+        )
+    dict_list = df.to_dict(orient='records')
+
+    to_add = [EnrichmentOutput(**row) for row in dict_list if
+              "_".join([row['db'], row['category'], row['sample_id'],
+                        row['project_name']]) not in already_there]
+    if len(to_add) != 0:
+        EnrichmentOutput.objects.bulk_create(to_add)
+
+
+
 def add_enrichment(project_name, reset_data=False):
 
 
@@ -154,7 +174,8 @@ if __name__ == '__main__':
     new_proj = ['jak_atra', 'jak_only', 'atra_only']
 
     for i in new_proj:
-        add_project(i)
-        add_enrichment(i)
+        # add_project(i)
+        # add_enrichment(i)
+        load_project(i)
         # dump_project(i)
 
