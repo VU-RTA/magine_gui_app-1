@@ -85,8 +85,8 @@ def return_table_from_model(project_name, category, dbs):
 
 def _add_check(row):
     i = row.name
-    out = '<input type="checkbox" id="checkbox{0}" name="{0}"> ' \
-          '<label for="checkbox{0}"></label>'.format(i)
+    out = '<input type="checkbox" id="checkbox{0}" name="{1}"> ' \
+          '<label for="checkbox{0}"></label>'.format(i, row.genes)
     return out
 
 
