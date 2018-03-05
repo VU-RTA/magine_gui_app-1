@@ -110,7 +110,7 @@ class SubgraphView(View):
             list_of_species = form.cleaned_data['list_of_species'].split(',')
             names = _check_species_list(list_of_species)
             graph = create_subgraph(names)
-            return HttpResponse(get_template('subgraph_view.html', using='jinja2').render(graph))
+            return _return_subgraph(graph)
 
 
         else:
@@ -128,9 +128,7 @@ class ShortestPathView(View):
             end = end.upper()
             bi_dir = form.cleaned_data['bi_dir']
             graph = path_between(start, end, bi_dir)
-            return HttpResponse(
-                get_template('subgraph_view.html', using='jinja2').render(
-                    graph))
+            return _return_subgraph(graph)
 
         else:
             form = forms.PathBetweenForm()
@@ -149,9 +147,7 @@ class NeighborsView(View):
             down_stream = form.cleaned_data['down_stream']
             max_dist = int(form.cleaned_data['max_dist'])
             graph = neighbors(start, up_stream, down_stream, max_dist)
-            return HttpResponse(
-                get_template('subgraph_view.html', using='jinja2').render(
-                    graph))
+            return _return_subgraph(graph)
 
         else:
             form = forms.NodeNeighborsForm(initial={'max_dist': '1'})
@@ -167,3 +163,6 @@ def _check_species_list(list_of_species):
     return names
 
 
+def _return_subgraph(graph):
+    return HttpResponse(
+        get_template('subgraph_view.html', using='jinja2').render(graph))

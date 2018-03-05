@@ -2,27 +2,20 @@
 {% block head %}
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link href="https://cdn.datatables.net/r/bs-3.3.5/dt-1.10.9/datatables.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    {#    <link href="https://cdn.datatables.net/r/bs-3.3.5/dt-1.10.9/datatables.min.css" rel="stylesheet">#}
+
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"/>
-    <link href="https://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.css" rel="stylesheet"/>
-
-    <link href="https://cdn.datatables.net/r/bs-3.3.5/dt-1.10.9/datatables.min.css"
-          rel="stylesheet" type="text/css"/>
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.1/jquery.dataTables.yadcf.css"
-          rel="stylesheet" type="text/css"/>
+    <link href="https://code.jquery.com/ui/1.9.2/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.2/jquery.dataTables.yadcf.css" rel="stylesheet"/>
 
 
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.9.0/jquery-ui.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.1/jquery.dataTables.yadcf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/yadcf/0.9.2/jquery.dataTables.yadcf.js"></script>
     <title>Table View</title>
     <style>
         .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
@@ -59,7 +52,12 @@
 
 
 <p>
-    <button onclick="makeSubgraph()" class="btn btn-success">Subgraphs</button>
+
+<form id="myForm" target="_blank" action="{{ url('subgraph') }}">
+    <input type="hidden" name="list_of_species" id="list_id" value="Subgraphs"/>
+    <input type="submit" name="submit_id" id="btn_id" value="Subgraphs"/>
+</form>
+
 </p>
 
 
@@ -67,79 +65,52 @@
     {% autoescape off %}
     var json_data = {{ data.data|safe}};
     {% endautoescape %}
-    {#
-        $(document).ready(function () {
-            $('a.toggle-vis').on('click', function (e) {
-                e.preventDefault();
-                $(this).toggleClass("clicked");
-                // Get the column API object
-                var column = table.column($(this).attr('data-column'));
-                // Toggle the visibility
-                column.visible(!column.visible());
-            });
+    $(document).ready(function () {
+
+        $('a.toggle-vis').on('click', function (e) {
+            e.preventDefault();
+            $(this).toggleClass("clicked");
+            // Get the column API object
+            var column = tbl.column($(this).attr('data-column'));
+            // Toggle the visibility
+            column.visible(!column.visible());
+        });
+        var tbl = $('table').DataTable({
+            "data": json_data,
+            "autoWidth": false,
+
+            columns: [
+                {% for key in data.columns %}
+                    {% if key =='genes' %}
+                        {title: "{{ key }}<br/>", width: "50px"},
+                    {% elif key =='term_name' %}
+                        {title: "{{ key }}<br/>", width: "50px"},
+                    {% elif key =='db' %}
+                        {title: "{{ key }}<br/>", width: "50px"},
+                    {% else %}
+                        {title: "{{ key }}<br/>", width: "10px"},
+                    {% endif %}
+                {% endfor %}
+            ]
+
 
         });
-        #}
-    $('a.toggle-vis').on('click', function (e) {
-        e.preventDefault();
-        $(this).toggleClass("clicked");
-        // Get the column API object
-        var column = tbl.column($(this).attr('data-column'));
-        // Toggle the visibility
-        column.visible(!column.visible());
-    });
-    var tbl = $('table').DataTable({
-        "data": json_data,
-        "autoWidth": false,
-        columns: [
-            {% for key in data.columns %}
-                {% if key =='genes' %}
-                    {title: "{{ key }}<br/>", width: "50px"},
-                {% elif key =='term_name' %}
-                    {title: "{{ key }}<br/>", width: "50px"},
-                {% elif key =='db' %}
-                    {title: "{{ key }}<br/>", width: "50px"},
-                {% else %}
-                    {title: "{{ key }}<br/>", width: "10px"},
-                {% endif %}
 
-                {#                {title: "{{ key }}"},#}
-            {% endfor %}
-        ]
-
+        yadcf.init(tbl, {% autoescape off %} {{data.filters|safe }} {% endautoescape %});
 
     });
+    $('#myForm').on('submit', function () {
+        document.getElementById("list_id").value = getSelected();
+        document.getElementById("myForm").submit();
+    });
 
-    yadcf.init(tbl, {% autoescape off %} {{data.filters|safe }} {% endautoescape %});
 
     function getSelected() {
         var selected = [];
         $('#table input:checked').each(function () {
             selected.push($(this).attr('name'));
         });
-        return selected;
-
-    }
-
-    function makeSubgraph() {
-        var rows = getSelected();
-        $.ajax({
-            url: "{{ url('subgraph') }}",
-            {#type: 'POST',#}
-            type: 'GET',
-
-            data: {
-                list_of_species: rows.join(','),
-
-            },
-            success: function (data) {
-                var newWindow = window.open("", "_blank");
-                newWindow.document.write(data);
-            },
-            error: function (xhr, status) {
-                alert(status);
-            },
-        });
+        return selected.join(',');
 
     }
 </script>
