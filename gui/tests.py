@@ -9,13 +9,17 @@ from magine_gui_app.settings import BASE_DIR
 _dir = BASE_DIR
 # Create your tests here.
 from gui.models import GeneList, Gene, Project, EnrichmentOutput
-from gui.enrichment_functions.create_enrichment_from_project import run_enrichment
+from gui.enrichment_functions.enrichr_helper import run_enrichment
+
+
+
 def delete_all():
     GeneList.objects.all().delete()
     Gene.objects.all().delete()
     Project.objects.all().delete()
 # delete_all()
 # quit()
+
 
 def add_gene_list():
     x = [
@@ -66,7 +70,6 @@ def test_project():
     new_project.save()
     print(new_project.samples.all().values_list())
 
-# test_project()
 def run_enrichment_for_project():
     project = Project.objects.all()
     for p in project:
@@ -83,4 +86,6 @@ def run_enrichment_for_project():
         EnrichmentOutput.objects.bulk_create(data)
 
 
-run_enrichment_for_project()
+if __name__ == '__main__':
+    test_project()
+    run_enrichment_for_project()

@@ -1,10 +1,11 @@
-import networkx as nx
-from gui.network_functions.networkx_tools import from_networkx
 import os
-from magine.networks.network_subgraphs import NetworkSubgraphs
-from magine.networks.utils import nx_to_json
-from magine.html_templates.cy_stypes import styles
 
+import networkx as nx
+
+from gui.network_functions.networkx_tools import from_networkx
+from magine.html_templates.cy_stypes import styles
+from magine.networks.exporters import nx_to_json
+from magine.networks.subgraphs import Subgraph
 
 _g_path = os.path.join(os.path.dirname(__file__),
                        'networks',
@@ -12,11 +13,11 @@ _g_path = os.path.join(os.path.dirname(__file__),
 
 
 g = nx.read_gpickle(_g_path)
-subgraph_gen = NetworkSubgraphs(g)
+subgraph_gen = Subgraph(g)
 
 
 def create_subgraph(list_of_species):
-    sg = subgraph_gen.shortest_paths_between_lists(list_of_species)
+    sg = subgraph_gen.paths_between_list(list_of_species)
     return prep_g(sg)
 
 
@@ -41,10 +42,9 @@ def neighbors(node, up, down, max_dist=1):
 
 
 def path_between(source, end, bi_dir):
-
-    new_g = subgraph_gen.shortest_paths_between_two_proteins(source, end,
-                                                             single_path=False,
-                                                             bidirectional=bi_dir)
+    sg = subgraph_gen.paths_between_pair(source, end,
+                                         single_path=False,
+                                         bidirectional=bi_dir)
     return prep_g(sg)
 
 

@@ -1,6 +1,9 @@
-import pandas as pd
 import numpy as np
-from magine.data.datatypes import create_table_of_data
+import pandas as pd
+
+from magine.data.experimental_data import create_table_of_data, \
+    ExperimentalData
+
 fold_change = 'treated_control_fold_change'
 flag = 'significant_flag'
 exp_method = 'data_type'
@@ -18,7 +21,7 @@ def get_significant_numbers(data, sig, unique):
 
     Parameters
     ----------
-    data : pd.DataFrame
+    data : ExperimentalData
 
     Returns
     -------

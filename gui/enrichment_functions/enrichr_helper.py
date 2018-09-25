@@ -4,9 +4,9 @@ import sys
 
 import pandas as pd
 
+from magine.enrichment.enrichr import Enrichr
 from magine.html_templates.html_tools import create_yadf_filters, \
     _format_simple_table
-from magine.ontology.enrichr import Enrichr
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
 path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

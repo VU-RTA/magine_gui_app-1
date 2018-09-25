@@ -1,16 +1,16 @@
 import json
-import gui.forms as forms
-from .models import Data, EnrichmentOutput
-from gui.network_functions import path_between, create_subgraph, neighbors
 
-from django.shortcuts import render, redirect
-from django.utils import timezone
 from django.http import HttpResponse
+from django.shortcuts import render, redirect
 from django.template.loader import get_template
+from django.utils import timezone
 from django.views import View
+
+import gui.forms as forms
 from gui.enrichment_functions.enrichr_helper import return_table, \
     model_to_json, return_table_from_model
-
+from gui.network_functions import path_between, create_subgraph, neighbors
+from .models import Data, EnrichmentOutput
 
 
 def index(request):
@@ -75,7 +75,7 @@ class EnrichmentResultsView(View):
         if form.is_valid():
             genes = form.cleaned_data['list_of_species'].split(',')
             list_of_species = _check_species_list(genes)
-            ont = form.cleaned_data['ontology']
+            ont = form.cleaned_data['enrichment']
             data = return_table(list_of_species, ont)
 
             template = get_template('simple_table_view.html', using='jinja2')

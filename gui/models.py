@@ -1,12 +1,14 @@
 import json
 import os
+
+import pandas as pd
 from django.db import models
 from django.utils import timezone
-from gui.data_functions import get_all_tables
-import pandas as pd
 from picklefield.fields import PickledObjectField
-from magine_gui_app.settings import BASE_DIR
 
+from gui.data_functions import get_all_tables
+from magine.data.experimental_data import ExperimentalData, load_data_csv
+from magine_gui_app.settings import BASE_DIR
 
 data_dir = os.path.join(BASE_DIR, '_state')
 
@@ -27,13 +29,19 @@ class Data(models.Model):
         self.upload_date = timezone.now()
 
     def set_exp_data(self, file, set_time_point=False):
-        data = pd.read_csv(file, low_memory=False)
+        if isinstance(file, pd.DataFrame):
+            exp_data = ExperimentalData(file)
+            data = ExperimentalData(file).data
+        else:
+            data = load_data_csv(file, low_memory=False)
+
         if set_time_point:
-            data['time'] = data['time_points']
+            data['time'] = data['sample_id']
         self.time_points = ','.join(
-            sorted((data['time_points'].astype(str).unique())))
-        self.modality = ','.join(list(data['data_type'].unique()))
-        time, all_m, uni_m, sig_m, sig_uni = get_all_tables(data)
+            sorted((data['sample_id'].astype(str).unique())))
+        self.modality = ','.join(list(data['source'].unique()))
+
+        time, all_m, uni_m, sig_m, sig_uni = get_all_tables(exp_data)
         self.time = json.dumps(time)
         self.all_measured = json.dumps(all_m)
         self.uni_measured = json.dumps(uni_m)
@@ -50,6 +58,10 @@ class Data(models.Model):
 
     def get_modalities(self):
         return self.modality.split(',')
+
+    def return_magine_data(self, project_name):
+        data = self.objects.filter(project_name=project_name)[0]
+        return ExperimentalData(data.data)
 
     def _str__(self):
         return self.project_name
@@ -72,6 +84,7 @@ class EnrichmentOutput(models.Model):
     p_value = models.FloatField(blank=True, default=0)
     adj_p_value = models.FloatField(blank=True, default=0)
     combined_score = models.FloatField(blank=True, default=0)
+    significant = models.BooleanField(blank=True)
 
 
 class Measurement(models.Model):
