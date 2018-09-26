@@ -9,7 +9,7 @@ from magine.networks.subgraphs import Subgraph
 
 _g_path = os.path.join(os.path.dirname(__file__),
                        'networks',
-                       'background_network.p')
+                       'background_network.p.gz')
 
 
 g = nx.read_gpickle(_g_path)

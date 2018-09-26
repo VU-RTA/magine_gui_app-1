@@ -4,17 +4,25 @@ import sys
 
 import pandas as pd
 
-from magine.enrichment.enrichr import Enrichr
+from magine.enrichment.enrichr import Enrichr, db_types
 from magine.html_templates.html_tools import create_yadf_filters, \
     _format_simple_table
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
-path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(path)
 from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
+
+sys.path.append(
+    os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
+)
+
 get_wsgi_application()
 from magine_gui_app.settings import BASE_DIR
 _dir = BASE_DIR
+
+from gui.models import Data, EnrichmentOutput
 
 e = Enrichr()
 
@@ -44,7 +52,7 @@ def model_to_json(model):
 def return_table(list_of_genes, ont='pathways'):
     cols = ['term_name', 'combined_score', 'adj_p_value', 'rank',
             'genes', 'n_genes', 'db']
-    df = e.run_set_of_dbs(list_of_genes, db=ont)[cols]
+    df = e.run(list_of_genes, gene_set_lib=db_types[ont])[cols]
     tmp_table = _format_simple_table(df)
     tmp_table['genes'] = tmp_table['genes'].str.split(',').str.join(', ')
     d = create_yadf_filters(tmp_table)
@@ -88,6 +96,44 @@ def _add_check(row):
     out = '<input type="checkbox" id="checkbox{0}" name="{1}"> ' \
           '<label for="checkbox{0}"></label>'.format(i, row.genes)
     return out
+
+
+def add_enrichment(project_name, reset_data=True):
+
+    from .celery_app import run
+
+    if reset_data:
+        EnrichmentOutput.objects.filter(project_name=project_name).delete()
+
+    # data = Data.objects.filter(project_name=project_name)[0]
+    # exp_data = ExperimentalData(data.data)
+    exp_data = Data.return_magine_data(Data, project_name=project_name)
+
+    already_there = set()
+    for i in EnrichmentOutput.objects.filter(project_name=project_name):
+        already_there.add("{}_{}_{}".format(str(i.category), str(i.sample_id),
+                                            project_name))
+
+    pt = exp_data.proteins.sample_ids
+    rt = exp_data.rna.sample_ids
+
+    if len(pt) != 0:
+        run(exp_data.proteins.sig.by_sample, pt, 'proteomics_both',
+            project_name, already_there, EnrichmentOutput)
+        run(exp_data.proteins.sig.up_by_sample, pt, 'proteomics_up',
+            project_name, already_there, EnrichmentOutput)
+        run(exp_data.proteins.sig.down_by_sample, pt, 'proteomics_down',
+            project_name, already_there, EnrichmentOutput)
+
+    if len(rt) != 0:
+        run(exp_data.rna.sig.by_sample, rt, 'rna_both', project_name,
+            already_there, EnrichmentOutput)
+        run(exp_data.rna.sig.down_by_sample, rt, 'rna_down', project_name,
+            already_there, EnrichmentOutput)
+        run(exp_data.rna.sig.up_by_sample, rt, 'rna_up', project_name,
+            already_there, EnrichmentOutput)
+
+    print("Done with enrichment")
 
 
 if __name__ == '__main__':

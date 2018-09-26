@@ -1,15 +1,16 @@
 import json
 
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.template.loader import get_template
-from django.utils import timezone
 from django.views import View
+from gui.data_functions.add_raptr_project import add_project_from_zip
 
 import gui.forms as forms
-from gui.enrichment_functions.enrichr_helper import return_table, \
-    model_to_json, return_table_from_model
-from gui.network_functions import path_between, create_subgraph, neighbors
+from .enrichment_functions.enrichr_helper import return_table, \
+    model_to_json, return_table_from_model, add_enrichment
+
+from .network_functions import path_between, create_subgraph, neighbors
 from .models import Data, EnrichmentOutput
 
 
@@ -55,12 +56,11 @@ class NewProjectView(View):
     def post(self, request):
         form = forms.ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.set_exp_data(form.cleaned_data['file'])
-            post.author = request.user
-            post.published_date = timezone.now()
-            post.save()
-            return redirect('post_detail', pk=post.project_name)
+            proj_name = form.cleaned_data['project_name']
+            add_project_from_zip(proj_name=proj_name,
+                                 filename=form.cleaned_data['file'])
+            add_enrichment(proj_name)
+            return project_details(request, proj_name)
         form = forms.ProjectForm()
         return render(request, 'add_data.html', {'form': form})
 
