@@ -3,12 +3,11 @@ import os
 import sys
 
 import pandas as pd
+from django.core.wsgi import get_wsgi_application
 
 from magine.enrichment.enrichr import Enrichr, db_types
 from magine.html_templates.html_tools import create_yadf_filters, \
     _format_simple_table
-
-from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
 
@@ -105,7 +104,7 @@ def add_enrichment(project_name, reset_data=True):
     if reset_data:
         EnrichmentOutput.objects.filter(project_name=project_name).delete()
 
-    # data = Data.objects.filter(project_name=project_name)[0]
+    # data = BaseData.objects.filter(project_name=project_name)[0]
     # exp_data = ExperimentalData(data.data)
     exp_data = Data.return_magine_data(Data, project_name=project_name)
 
