@@ -16,7 +16,7 @@ data_dir = os.path.join(BASE_DIR, '_state')
 class Data(models.Model):
     project_name = models.CharField(max_length=200)
     upload_date = models.DateField(blank=True, null=True)
-    data = PickledObjectField(compress=True, blank=True)
+    data = PickledObjectField(compress=True, blank=True, null=True)
     time_points = models.CharField(max_length=2000, blank=True)
     modality = models.CharField(max_length=2000, blank=True)
     time = models.CharField(max_length=2000, blank=True)
