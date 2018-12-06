@@ -14,7 +14,6 @@ bioservices
 pathos
 appdirs
 plotly==2.7
-jupyter
 seaborn
 py2cytoscape
 pydotplus

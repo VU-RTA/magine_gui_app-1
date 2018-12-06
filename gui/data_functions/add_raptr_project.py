@@ -1,5 +1,5 @@
+from gui.data_functions.data_format.format import process_raptr_zip
 from gui.models import Data
-from data_format.format import process_raptr_zip
 
 
 def add_project_from_zip(proj_name, filename):
