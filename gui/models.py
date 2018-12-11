@@ -37,10 +37,7 @@ class Data(models.Model):
 
         if set_time_point:
             data['time'] = data['sample_id']
-        self.time_points = ','.join(
-            sorted((data['sample_id'].astype(str).unique())))
-        self.modality = ','.join(list(data['source'].unique()))
-
+        self.time_points = json.dumps(sorted((data['sample_id'].unique())))
         time, all_m, uni_m, sig_m, sig_uni = get_all_tables(exp_data)
         self.time = json.dumps(time)
         self.all_measured = json.dumps(all_m)
@@ -51,13 +48,10 @@ class Data(models.Model):
         self.save()
 
     def get_time_points(self):
-        return self.time_points.split(',')
+        return json.loads(self.time_points)
 
     def get_all_measured(self):
         return json.loads(self.all_measured)
-
-    def get_modalities(self):
-        return self.modality.split(',')
 
     def return_magine_data(self, project_name):
         data = self.objects.filter(project_name=project_name)[0]
