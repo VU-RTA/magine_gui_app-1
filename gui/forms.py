@@ -1,6 +1,7 @@
-from django import forms
-import gui.models as models
 import django.forms.widgets as widg
+from django import forms
+
+import gui.models as models
 
 
 class ProjectForm(forms.ModelForm):
@@ -58,27 +59,25 @@ class PathBetweenForm(forms.Form):
         fields = ('start', 'end', 'bi_dir')
 
 
-class EnrichmentDatasetForm(forms.Form):
+class EnrichmentDatasetForm(forms.ModelForm):
+    class Meta:
+        model = models.EnrichmentOutput
+        fields = ['project_name', 'category', 'dbs', ]
+
     project_name = forms.MultipleChoiceField(
         widget=widg.CheckboxSelectMultiple,
-        choices=models.EnrichmentOutput.objects.all(
-
-        ).values_list('project_name', 'project_name').distinct()
+        choices=models.EnrichmentOutput.objects.all().values_list(
+            'project_name', 'project_name').distinct()
     )
 
     category = forms.MultipleChoiceField(
         widget=widg.CheckboxSelectMultiple,
-        choices=models.EnrichmentOutput.objects.all(
-        ).values_list('category', 'category').distinct()
+        choices=models.EnrichmentOutput.objects.all().values_list(
+            'category', 'category').distinct()
     )
 
     dbs = forms.MultipleChoiceField(
-
         widget=widg.CheckboxSelectMultiple,
-        choices=models.EnrichmentOutput.objects.all(
-
-        ).values_list('db','db').distinct()
+        choices=models.EnrichmentOutput.objects.all().values_list(
+            'db', 'db').distinct()
     )
-
-    class Meta:
-        fields = ['project_name', 'category', 'dbs', ]

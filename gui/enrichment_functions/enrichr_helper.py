@@ -72,6 +72,7 @@ def return_table_from_model(project_name, category, dbs):
     df = EnrichmentOutput.objects.all().filter(project_name__in=project_name)
     df = df.filter(category__in=category)
     df = df.filter(db__in=dbs)
+
     df = pd.DataFrame(list(df.values()))[cols]
 
     df = df[df['adj_p_value'] < 0.2]

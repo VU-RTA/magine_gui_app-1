@@ -4,18 +4,21 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.template.loader import get_template
 from django.views import View
-from gui.data_functions.add_raptr_project import add_project_from_zip
 
 import gui.forms as forms
+from gui.data_functions.add_raptr_project import add_project_from_zip
 from .enrichment_functions.enrichr_helper import return_table, \
     model_to_json, return_table_from_model, add_enrichment
-
-from .network_functions import path_between, create_subgraph, neighbors
 from .models import Data, EnrichmentOutput
+from .network_functions import path_between, create_subgraph, neighbors
 
 
 def index(request):
-    projects = Data.objects.all()
+    try:
+        projects = Data.objects.all()
+    except:
+        projects = {}
+
     _data = {'projects': projects}
     return HttpResponse(
         get_template('welcome.html', using='jinja2').render(_data)
@@ -111,8 +114,6 @@ class SubgraphView(View):
             names = _check_species_list(list_of_species)
             graph = create_subgraph(names)
             return _return_subgraph(graph)
-
-
         else:
             form = forms.ListOfSpeciesFrom()
             return render(request, 'form_species_list.html', {'form': form})
