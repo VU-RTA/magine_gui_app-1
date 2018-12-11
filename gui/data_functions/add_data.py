@@ -2,14 +2,11 @@ import os
 
 import pandas as pd
 
-from data_format.format import process_raptr_zip
+from gui.data_functions.data_format.format import process_raptr_zip
 from gui.models import Data, EnrichmentOutput
-from magine.data.experimental_data import ExperimentalData
-from magine.enrichment.enrichr import Enrichr, db_types
 from magine_gui_app.settings import BASE_DIR
 
 _dir = BASE_DIR
-e = Enrichr()
 
 
 def add_project(proj_name):

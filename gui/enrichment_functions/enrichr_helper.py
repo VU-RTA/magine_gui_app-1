@@ -119,19 +119,19 @@ def add_enrichment(project_name, reset_data=True):
 
     if len(pt) != 0:
         run(exp_data.proteins.sig.by_sample, pt, 'proteomics_both',
-            project_name, already_there, EnrichmentOutput)
+            project_name, already_there)
         run(exp_data.proteins.sig.up_by_sample, pt, 'proteomics_up',
-            project_name, already_there, EnrichmentOutput)
+            project_name, already_there)
         run(exp_data.proteins.sig.down_by_sample, pt, 'proteomics_down',
-            project_name, already_there, EnrichmentOutput)
+            project_name, already_there)
 
     if len(rt) != 0:
         run(exp_data.rna.sig.by_sample, rt, 'rna_both', project_name,
-            already_there, EnrichmentOutput)
+            already_there)
         run(exp_data.rna.sig.down_by_sample, rt, 'rna_down', project_name,
-            already_there, EnrichmentOutput)
+            already_there)
         run(exp_data.rna.sig.up_by_sample, rt, 'rna_up', project_name,
-            already_there, EnrichmentOutput)
+            already_there)
 
     print("Done with enrichment")
 

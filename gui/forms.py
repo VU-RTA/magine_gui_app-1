@@ -60,24 +60,33 @@ class PathBetweenForm(forms.Form):
 
 
 class EnrichmentDatasetForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EnrichmentDatasetForm, self).__init__(*args, **kwargs)
+        c = models.EnrichmentOutput.objects.values_list(
+            'project_name', 'project_name').distinct()
+
+        self.fields['project_name'] = forms.MultipleChoiceField(
+            c, widget=widg.CheckboxSelectMultiple)
+        self.fields['project_name'].initial = c
+
+        c = models.EnrichmentOutput.objects.values_list('db', 'db').distinct()
+
+        self.fields['db'] = forms.MultipleChoiceField(
+            c, widget=widg.CheckboxSelectMultiple
+        )
+        self.fields['db'].initial = c
+
+        c = models.EnrichmentOutput.objects.values_list(
+            'category', 'category').distinct()
+
+        self.fields['category'] = forms.MultipleChoiceField(
+            c,widget=widg.CheckboxSelectMultiple)
+        self.fields['category'].initial = c
+        # self.fields['category'].widget = widg.CheckboxSelectMultiple
+
     class Meta:
         model = models.EnrichmentOutput
-        fields = ['project_name', 'category', 'dbs', ]
+        fields = ['project_name', 'category', 'db', ]
 
-    project_name = forms.MultipleChoiceField(
-        widget=widg.CheckboxSelectMultiple,
-        choices=models.EnrichmentOutput.objects.all().values_list(
-            'project_name', 'project_name').distinct()
-    )
 
-    category = forms.MultipleChoiceField(
-        widget=widg.CheckboxSelectMultiple,
-        choices=models.EnrichmentOutput.objects.all().values_list(
-            'category', 'category').distinct()
-    )
-
-    dbs = forms.MultipleChoiceField(
-        widget=widg.CheckboxSelectMultiple,
-        choices=models.EnrichmentOutput.objects.all().values_list(
-            'db', 'db').distinct()
-    )

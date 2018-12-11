@@ -88,6 +88,8 @@ def convert_to_rankable_time(data):
     def h_to_hr(row):
         if row[sample_id].endswith('h'):
             return row[sample_id].replace('h', 'hr')
+        elif row[sample_id].endswith('h,hr'):
+            return row[sample_id].replace('h,hr', 'hr')
         else:
             return row[sample_id]
 
