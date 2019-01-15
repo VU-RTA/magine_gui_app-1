@@ -5,11 +5,10 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.views import View
 
-import gui.forms as forms
+from gui.forms.project import ProjectForm
 from gui.data_functions.add_raptr_project import add_project_from_zip
-from gui.enrichment_functions.enrichr_helper import return_table, \
-    model_to_json, return_table_from_model, add_enrichment
-from gui.models import Data, EnrichmentOutput
+from gui.enrichment_functions.enrichr_helper import add_enrichment
+from gui.models import Data
 
 
 def index(request):
@@ -22,9 +21,6 @@ def index(request):
     return HttpResponse(
         get_template('welcome.html', using='jinja2').render(_data)
     )
-
-
-
 
 
 def project_details(request, project_name):
@@ -45,21 +41,20 @@ def project_details(request, project_name):
     return render(request, 'project_details.html', content)
 
 
-
 class NewProjectView(View):
     def post(self, request):
-        form = forms.ProjectForm(request.POST, request.FILES)
+        form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             proj_name = form.cleaned_data['project_name']
             add_project_from_zip(proj_name=proj_name,
                                  filename=form.cleaned_data['file'])
             add_enrichment(proj_name)
             return project_details(request, proj_name)
-        form = forms.ProjectForm()
+        form = ProjectForm()
         return render(request, 'add_data.html', {'form': form})
 
     def get(self, request):
-        form = forms.ProjectForm()
+        form = ProjectForm()
         return render(request, 'add_data.html', {'form': form})
 
 

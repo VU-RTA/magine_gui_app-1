@@ -56,7 +56,6 @@ def convert_to_rankable_time(data):
     def h_to_hr(row):
         if row[sample_id].endswith('h') or row[sample_id].endswith('hr'):
             number = re.findall('\d+', row[sample_id])
-            print(row[sample_id], set(number))
             if len(set(number)) == 1:
                 return number[0] + 'hr'
             else:

@@ -70,6 +70,7 @@ def test_project():
     new_project.save()
     print(new_project.samples.all().values_list())
 
+
 def run_enrichment_for_project():
     project = Project.objects.all()
     for p in project:
