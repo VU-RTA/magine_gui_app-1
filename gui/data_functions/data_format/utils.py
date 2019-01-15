@@ -52,44 +52,15 @@ def check_data(data, keyword):
     return data
 
 
-def convert_time_to_hours(d):
-    """ replaces string of time point with float
-
-    Parameters
-    ----------
-    d: pandas.Dataframe
-        pandas.Dataframe
-
-    Returns
-    -------
-
-    """
-    t = d['time_points']
-    if isinstance(t, float):
-        return t
-    if 's' in t:
-        time = float(t.replace('s', '')) / 3600.
-    elif 'min' in t:
-        time = float(t.replace('min', '')) / 60.
-    elif 'hr' in t:
-        t = t.replace('hr', '')
-        if 'h' in t:
-            t = t.replace('h', '')
-        time = float(t)
-    elif 'h' in t:
-        time = float(t.replace('h', ''))
-    else:
-        print('no time')
-        return None
-    return time
-
-
 def convert_to_rankable_time(data):
     def h_to_hr(row):
-        if row[sample_id].endswith('h'):
-            return row[sample_id].replace('h', 'hr')
-        elif row[sample_id].endswith('h,hr'):
-            return row[sample_id].replace('h,hr', 'hr')
+        if row[sample_id].endswith('h') or row[sample_id].endswith('hr'):
+            number = re.findall('\d+', row[sample_id])
+            if len(set(number)) == 1:
+                return number[0] + 'hr'
+            else:
+                return row[sample_id].replace('h', 'hr')
+            # return number.replace('h', 'hr')
         else:
             return row[sample_id]
 

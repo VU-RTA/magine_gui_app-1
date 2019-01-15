@@ -5,16 +5,6 @@
         <h1> Project name : {{ data.project_name }}</h1>
         <h3>  <a href="{{url('filter')}}"
                                    target="_blank">View enrichment output</a> </h3>
-{#        <ul>#}
-{#            {% for i in data.get_time_points() %}#}
-{#                <li> {{ i }}</li>#}
-{#            {% endfor %}#}
-{#        </ul>#}
-{#        <ul>#}
-{#            {% for i in data.get_modalities() %}#}
-{#                <li> {{ i }}</li>#}
-{#            {% endfor %}#}
-{#        </ul>#}
         <div class="container-fluid">
             <ul class="nav nav-tabs" id="product-table">
                 <li><a href="#1" data-toggle="tab">All measured</a></li>

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.template.loader import get_template
 from django.views import View
 
-import gui.forms as forms
+import gui.forms.network as forms
 from .common import check_species_list
 from gui.network_functions import path_between, create_subgraph, neighbors
 

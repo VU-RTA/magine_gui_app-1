@@ -10,16 +10,11 @@ sys.path.append(
         os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     )
 )
-print(os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    ))
 get_wsgi_application()
 
 from gui.data_functions.add_raptr_project import add_project_from_zip
-from gui.enrichment_functions.enrichr_helper import add_enrichment
 from gui.models import Data, EnrichmentOutput
 from magine_gui_app.settings import BASE_DIR
-
 _dir = BASE_DIR
 
 
@@ -63,7 +58,7 @@ def load_project(proj_name):
 
 def do_all(project_name, raptr_file):
     add_project_from_zip(project_name, raptr_file)
-    add_enrichment(project_name)
+    # add_enrichment(project_name)
 
 
 if __name__ == '__main__':

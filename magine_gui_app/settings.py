@@ -28,13 +28,12 @@ DEBUG = True
 ALLOWED_HOSTS = ['magine.lolab.xyz', '127.0.0.1', '0.0.0.0']
 
 # CELERY STUFF
-# BROKER_URL = 'redis://localhost:6379'
-# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-# CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = 'Africa/Nairobi'
-
+BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Africa/Nairobi'
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+BACKGROUND_TASK_RUN_ASYNC = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -92,15 +93,36 @@ TEMPLATES = [
 WSGI_APPLICATION = 'magine_gui_app.wsgi.application'
 
 
+
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '_state/db.sqlite3'),
+
+DATABASE_SETTING = 'postgres'
+DATABASE_SETTING = ''
+
+if DATABASE_SETTING == 'postgres':
+    # Bigger batch size is faster but uses more memory
+    DB_MAX_BATCH_SIZE = 100000
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'HOST': os.environ.get('POSTGRES_HOST', 'db'),
+            'NAME': os.environ.get('POSTGRES_DB', False) or
+                    os.environ.get('POSTGRES_USER', 'postgres'),
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'postgres'),
+            'PORT': os.environ.get('POSTGRES_PORT', 5432)
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, '_state/db.sqlite3'),
+        }
+    }
+
 
 # django-import-export settings
 # not sure if this is required
@@ -130,13 +152,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 

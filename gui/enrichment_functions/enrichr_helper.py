@@ -8,6 +8,8 @@ from django.core.wsgi import get_wsgi_application
 from magine.enrichment.enrichr import Enrichr, db_types
 from magine.html_templates.html_tools import create_yadf_filters, \
     _format_simple_table
+from gui.tasks import run
+
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magine_gui_app.settings')
 
@@ -18,8 +20,6 @@ sys.path.append(
 )
 
 get_wsgi_application()
-from magine_gui_app.settings import BASE_DIR
-_dir = BASE_DIR
 
 from gui.models import Data, EnrichmentOutput
 
@@ -99,8 +99,6 @@ def _add_check(row):
 
 
 def add_enrichment(project_name, reset_data=True):
-
-    from .celery_app import run
 
     if reset_data:
         EnrichmentOutput.objects.filter(project_name=project_name).delete()
